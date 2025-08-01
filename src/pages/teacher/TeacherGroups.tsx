@@ -20,7 +20,7 @@ export default function TeacherGroups() {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
   const [editingGroup, setEditingGroup] = useState<Group | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedStudents, setSelectedStudents] = useState<string[]>([])
+  const [selectedStudent, setSelectedStudent] = useState<string>('')
   const [formData, setFormData] = useState({
     name: '',
     subject: '',
@@ -30,7 +30,6 @@ export default function TeacherGroups() {
   })
   
   const teacherGroups = getGroupsByTeacher(user?.id || '')
-  // const teacherStudents = getStudentsByTeacher(user?.id || '')
 
   const handleViewStudents = (group: Group) => {
     setSelectedGroup(group)
@@ -103,7 +102,7 @@ export default function TeacherGroups() {
 
   const handleAssignStudents = (group: Group) => {
     setSelectedGroup(group)
-    setSelectedStudents(getStudentsInGroup(group.id).map(s => s.id))
+    setSelectedStudent('')
     setSearchTerm('')
     setIsAssignModalOpen(true)
   }
@@ -111,38 +110,23 @@ export default function TeacherGroups() {
   const handleCloseAssignModal = () => {
     setIsAssignModalOpen(false)
     setSelectedGroup(null)
-    setSelectedStudents([])
+    setSelectedStudent('')
     setSearchTerm('')
   }
 
-  const handleStudentToggle = (studentId: string) => {
-    setSelectedStudents(prev => 
-      prev.includes(studentId)
-        ? prev.filter(id => id !== studentId)
-        : [...prev, studentId]
-    )
-  }
-
   const handleAssignSubmit = () => {
-    if (!selectedGroup) return
+    if (!selectedGroup || !selectedStudent) return
 
-    // Update all students to remove them from the current group
-    students.forEach(student => {
-      if (student.group === selectedGroup.name) {
-        updateStudent(student.id, { group: '' })
-      }
-    })
+    // Find the student to assign
+    const student = students.find(s => s.id === selectedStudent)
+    if (!student) return
 
-    // Assign selected students to the group
-    selectedStudents.forEach(studentId => {
-      const student = students.find(s => s.id === studentId)
-      if (student) {
-        updateStudent(studentId, { group: selectedGroup.name })
-      }
-    })
+    // Update the student's group
+    updateStudent(selectedStudent, { group: selectedGroup.name })
 
     // Update group student count
-    updateGroup(selectedGroup.id, { studentCount: selectedStudents.length })
+    const currentStudentsInGroup = getStudentsInGroup(selectedGroup.id).length
+    updateGroup(selectedGroup.id, { studentCount: currentStudentsInGroup + 1 })
 
     handleCloseAssignModal()
   }
@@ -154,11 +138,13 @@ export default function TeacherGroups() {
   }
 
   const getAvailableStudents = () => {
-    // Show all students in the system (like admin section)
-    return students.filter(student =>
-      student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    // Show students who are not assigned to any group or are assigned to a different group
+    return students.filter(student => {
+      const matchesSearch = student.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          student.email.toLowerCase().includes(searchTerm.toLowerCase())
+      const isAvailable = !student.group || student.group !== selectedGroup?.name
+      return matchesSearch && isAvailable
+    })
   }
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -287,7 +273,7 @@ export default function TeacherGroups() {
                         onClick={() => handleAssignStudents(group)}
                       >
                         <UserPlus className="w-4 h-4 mr-1" />
-                        Assign Students
+                        Add Student
                       </Button>
                       <Button 
                         size="sm" 
@@ -409,7 +395,7 @@ export default function TeacherGroups() {
                         </label>
                         <Input
                           type="number"
-                          // value={formData.studentCount}
+                          value={formData.studentCount}
                           onChange={(e) => setFormData({ ...formData, studentCount: Number(e.target.value) })}
                           placeholder="Enter student count"
                           className="h-10"
@@ -473,7 +459,7 @@ export default function TeacherGroups() {
           />
           
           {/* Modal Content */}
-          <div className="relative w-full max-w-4xl transform transition-all duration-300 scale-100 opacity-100">
+          <div className="relative w-full max-w-2xl transform transition-all duration-300 scale-100 opacity-100">
             <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm max-h-[80vh] overflow-y-auto">
               <CardHeader className="relative pb-6">
                 <div className="flex items-center justify-between">
@@ -483,10 +469,10 @@ export default function TeacherGroups() {
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold text-foreground">
-                        Assign Students to {selectedGroup.name}
+                        Add Student to {selectedGroup.name}
                       </CardTitle>
                       <CardDescription className="text-muted-foreground">
-                        Select students from all available students to assign to this group
+                        Select one student to add to this group
                       </CardDescription>
                     </div>
                   </div>
@@ -517,68 +503,68 @@ export default function TeacherGroups() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                      All Students ({getAvailableStudents().length})
+                      Available Students ({getAvailableStudents().length})
                     </h3>
-                    <Badge variant="secondary">
-                      {selectedStudents.length} selected
-                    </Badge>
+                    {selectedStudent && (
+                      <Badge variant="secondary">
+                        1 selected
+                      </Badge>
+                    )}
                   </div>
                   
-                  {/* Multi-select dropdown */}
+                  {/* Single student selection dropdown */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                       <Users className="w-4 h-4" />
-                      Available Students
+                      Select Student
                     </label>
                     <div className="relative">
                       <select
-                        multiple
-                        value={selectedStudents}
-                        onChange={(e) => {
-                          const selectedOptions = Array.from(e.target.selectedOptions, option => option.value)
-                          setSelectedStudents(selectedOptions)
-                        }}
-                        className="w-full h-32 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white resize-none"
+                        value={selectedStudent}
+                        onChange={(e) => setSelectedStudent(e.target.value)}
+                        className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                       >
+                        <option value="">Choose a student...</option>
                         {getAvailableStudents().map((student) => (
                           <option key={student.id} value={student.id} className="py-2">
                             {student.fullName} - {student.email} {student.group ? `(Currently in: ${student.group})` : '(Unassigned)'}
                           </option>
                         ))}
                       </select>
-                      <div className="absolute right-3 top-3 pointer-events-none">
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                         <ChevronDown className="w-4 h-4 text-gray-400" />
                       </div>
                     </div>
                     <p className="text-xs text-gray-500">
-                      Hold Ctrl (or Cmd on Mac) to select multiple students
+                      Select one student to add to this group
                     </p>
                   </div>
                   
-                  {/* Selected Students Preview */}
-                  {selectedStudents.length > 0 && (
+                  {/* Selected Student Preview */}
+                  {selectedStudent && (
                     <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-muted-foreground">Selected Students:</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-32 overflow-y-auto">
-                        {selectedStudents.map((studentId) => {
-                          const student = students.find(s => s.id === studentId)
+                      <h4 className="text-sm font-medium text-muted-foreground">Selected Student:</h4>
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                        {(() => {
+                          const student = students.find(s => s.id === selectedStudent)
                           return student ? (
-                            <div key={studentId} className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded-md">
+                            <div className="flex items-center justify-between">
                               <div>
                                 <p className="text-sm font-medium text-foreground">{student.fullName}</p>
                                 <p className="text-xs text-gray-500">{student.email}</p>
+                                <p className="text-xs text-gray-500">{student.phoneNumber}</p>
                               </div>
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => handleStudentToggle(studentId)}
+                                onClick={() => setSelectedStudent('')}
                                 className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
                               >
                                 <X className="w-3 h-3" />
                               </Button>
                             </div>
                           ) : null
-                        })}
+                        })()}
                       </div>
                     </div>
                   )}
@@ -595,9 +581,9 @@ export default function TeacherGroups() {
                   <Button 
                     onClick={handleAssignSubmit}
                     className="flex-1 h-11 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-medium"
-                    disabled={selectedStudents.length === 0}
+                    disabled={!selectedStudent}
                   >
-                    Assign {selectedStudents.length} Student{selectedStudents.length !== 1 ? 's' : ''}
+                    Add Student to Group
                   </Button>
                   <Button 
                     variant="outline" 

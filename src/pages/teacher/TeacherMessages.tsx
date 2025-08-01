@@ -17,7 +17,7 @@ import {
 
 export default function TeacherMessages() {
   const { user } = useAuthStore()
-  const { messages, addMessage, getMessagesByGroup, getMessagesByParticipants, getGroupsByUser, markGroupAsRead, setTyping, getTypingUsers, deleteMessage, editMessage } = useChatStore()
+  const { messages, addMessage, getMessagesByGroup, getMessagesByParticipants, getGroupsByUser, markGroupAsRead, setTyping, getTypingUsers, deleteMessage, editMessage, getMessagesForTeacher } = useChatStore()
   const [selectedGroup, setSelectedGroup] = useState<ChatGroup | null>(null)
   const [newMessage, setNewMessage] = useState('')
   const [isNewChat, setIsNewChat] = useState(false)
@@ -30,11 +30,10 @@ export default function TeacherMessages() {
 
   const userGroups = getGroupsByUser(user?.id || '')
 
-  // Mock students for new chat
-  const mockStudents = [
-    { id: 'student1', name: 'Alice Student' },
-    { id: 'student2', name: 'Bob Student' },
-    { id: 'student3', name: 'Charlie Student' }
+  // Demo students for new chat - using correct user IDs
+  const demoStudents = [
+    { id: '3', name: 'Alice Student', group: 'Math Group A' }, // student1 (id: 3)
+    { id: '6', name: 'Bob Student', group: 'Science Group C' }, // student2 (id: 6)
   ]
 
   const scrollToBottom = () => {
@@ -126,18 +125,44 @@ export default function TeacherMessages() {
   const getGroupName = (group: ChatGroup) => {
     if (group.type === 'individual') {
       const otherParticipant = group.participants.find(p => p !== user?.id)
-      return mockStudents.find(s => s.id === otherParticipant)?.name || 'Unknown'
+      const student = demoStudents.find(s => s.id === otherParticipant)
+      return student ? student.name : 'Individual Chat'
     }
     return group.name
   }
 
-  const getGroupIcon = (group: ChatGroup) => {
-    return group.type === 'group' ? <Users className="w-4 h-4" /> : <User className="w-4 h-4" />
+  const getTypingIndicator = () => {
+    if (!selectedGroup) return null
+    
+    const typingUsers = getTypingUsers(selectedGroup.id)
+    const typingUserNames = typingUsers
+      .filter(id => id !== user?.id)
+      .map(id => {
+        const student = demoStudents.find(s => s.id === id)
+        return student ? student.name : 'Someone'
+      })
+    
+    if (typingUserNames.length > 0) {
+      return (
+        <div className="flex items-center space-x-2 text-sm text-gray-500 italic">
+          <div className="flex space-x-1">
+            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          </div>
+          <span>{typingUserNames.join(', ')} is typing...</span>
+        </div>
+      )
+    }
+    return null
   }
 
-  const handleEditMessage = (messageId: string, currentContent: string) => {
-    setEditingMessage(messageId)
-    setEditContent(currentContent)
+  const handleEditMessage = (messageId: string) => {
+    const message = messages.find(m => m.id === messageId)
+    if (message) {
+      setEditingMessage(messageId)
+      setEditContent(message.content)
+    }
   }
 
   const handleSaveEdit = () => {
@@ -153,155 +178,77 @@ export default function TeacherMessages() {
     setEditContent('')
   }
 
-  const handleDeleteMessage = (messageId: string) => {
-    if (confirm('Are you sure you want to delete this message?')) {
-      deleteMessage(messageId)
-    }
-  }
-
-  const getTypingIndicator = () => {
-    if (!selectedGroup && !selectedStudent) return null
-    
-    const groupId = selectedGroup?.id || `individual-${selectedStudent}`
-    const typingUsers = getTypingUsers(groupId)
-    const otherTypingUsers = typingUsers.filter(id => id !== user?.id)
-    
-    if (otherTypingUsers.length === 0) return null
-    
-    const typingNames = otherTypingUsers.map(id => 
-      mockStudents.find(s => s.id === id)?.name || 'Someone'
-    ).join(', ')
-    
-    return (
-      <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 italic">
-        <div className="flex space-x-1">
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-        </div>
-        <span>{typingNames} {otherTypingUsers.length === 1 ? 'is' : 'are'} typing...</span>
-      </div>
-    )
-  }
-
-  // Get all conversations (groups + individual messages)
-  const getAllConversations = () => {
-    const conversations = [...userGroups]
-    
-    // Add individual conversations based on messages
-    const individualMessages = messages.filter(msg => 
-      (msg.senderId === user?.id && msg.recipientId) ||
-      (msg.recipientId === user?.id && msg.senderId)
-    )
-    
-    const individualStudents = new Set<string>()
-    individualMessages.forEach(msg => {
-      if (msg.senderId === user?.id && msg.recipientId) {
-        individualStudents.add(msg.recipientId)
-      } else if (msg.recipientId === user?.id && msg.senderId) {
-        individualStudents.add(msg.senderId)
-      }
-    })
-    
-    individualStudents.forEach(studentId => {
-      const student = mockStudents.find(s => s.id === studentId)
-      if (student && !conversations.find(c => c.participants.includes(studentId))) {
-        conversations.push({
-          id: `individual-${studentId}`,
-          name: student.name,
-          type: 'individual' as const,
-          participants: [user?.id || '', studentId],
-          unreadCount: 0,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        })
-      }
-    })
-    
-    return conversations.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground dark:text-white">Messages</h1>
-          <p className="text-gray-600 dark:text-gray-400">Communicate with your students and groups</p>
+          <h1 className="text-3xl font-bold text-foreground">Messages</h1>
+          <p className="text-muted-foreground">Communicate with your students and groups</p>
         </div>
-        <Button onClick={() => setIsNewChat(true)} className="flex-0 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium">
+        <Button 
+          onClick={() => setIsNewChat(true)}
+          className="flex-0 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium"
+        >
           <Plus className="w-4 h-4 mr-2" />
           New Chat
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[600px]">
-        {/* Chat List */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Sidebar */}
         <div className="lg:col-span-1">
-          <Card className="h-full">
+          <Card>
             <CardHeader>
-              <CardTitle>Conversations</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="w-5 h-5" />
+                <span>Conversations</span>
+              </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
-              <div className="space-y-1">
-                {getAllConversations().length === 0 ? (
-                  <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                    <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No conversations yet</p>
-                    <Button 
-                      onClick={() => setIsNewChat(true)} 
-                      variant="outline" 
-                      size="sm" 
-                      className="mt-2"
-                    >
-                      Start a conversation
-                    </Button>
-                  </div>
-                ) : (
-                  getAllConversations().map((group) => (
-                    <button
-                      key={group.id}
-                      onClick={() => {
-                        if (group.type === 'group') {
-                          setSelectedGroup(group)
-                          setSelectedStudent(null)
-                        } else {
-                          setSelectedStudent(group.participants.find(p => p !== user?.id) || null)
-                          setSelectedGroup(null)
-                        }
-                        setIsNewChat(false)
-                      }}
-                      className={`w-full p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
-                        selectedGroup?.id === group.id || selectedStudent === group.participants.find(p => p !== user?.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <Avatar className="w-8 h-8">
-                            <AvatarFallback className="text-xs">
-                              {getGroupIcon(group)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate">
-                              {getGroupName(group)}
-                            </p>
-                            {group.lastMessage && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {group.lastMessage.content}
-                              </p>
+            <CardContent>
+              <div className="space-y-2">
+                {userGroups.map((group) => (
+                  <div
+                    key={group.id}
+                    onClick={() => {
+                      setSelectedGroup(group)
+                      setSelectedStudent(null)
+                    }}
+                    className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                      selectedGroup?.id === group.id
+                        ? 'bg-blue-50 border border-blue-200'
+                        : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="w-8 h-8">
+                          <AvatarFallback>
+                            {group.type === 'individual' ? <User className="w-4 h-4" /> : <Users className="w-4 h-4" />}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium text-sm">{getGroupName(group)}</p>
+                          <p className="text-xs text-gray-500">
+                            {group.lastMessage ? (
+                              <>
+                                {group.lastMessage.senderName}: {group.lastMessage.content.substring(0, 30)}
+                                {group.lastMessage.content.length > 30 && '...'}
+                              </>
+                            ) : (
+                              'No messages yet'
                             )}
-                          </div>
+                          </p>
                         </div>
-                        {group.unreadCount > 0 && (
-                          <Badge variant="destructive" className="text-xs">
-                            {group.unreadCount}
-                          </Badge>
-                        )}
                       </div>
-                    </button>
-                  ))
-                )}
+                      {group.unreadCount > 0 && (
+                        <Badge variant="secondary" className="text-xs">
+                          {group.unreadCount}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -309,130 +256,121 @@ export default function TeacherMessages() {
 
         {/* Chat Area */}
         <div className="lg:col-span-3">
-          <Card className="h-full flex flex-col">
+          <Card className="h-[600px] flex flex-col">
             {selectedGroup || selectedStudent ? (
               <>
                 {/* Chat Header */}
                 <CardHeader className="border-b">
-                  <CardTitle className="flex items-center space-x-2">
-                    {selectedGroup ? (
-                      getGroupIcon(selectedGroup)
-                    ) : (
-                      <User className="w-4 h-4" />
-                    )}
-                    <span>
-                      {selectedGroup ? getGroupName(selectedGroup) : 
-                       mockStudents.find(s => s.id === selectedStudent)?.name || 'Unknown Student'}
-                    </span>
-                    {selectedGroup && selectedGroup.type === 'group' && (
-                      <Badge variant="outline" className="text-xs">
-                        Group
-                      </Badge>
-                    )}
-                    {selectedStudent && (
-                      <Badge variant="outline" className="text-xs">
-                        Individual
-                      </Badge>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-
-                {/* Messages */}
-                <CardContent className="flex-1 p-0 overflow-hidden">
-                  <div className="h-full flex flex-col">
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                      {getCurrentMessages().map((message) => (
-                        <div
-                          key={message.id}
-                          className={`flex ${message.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div
-                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg relative group ${
-                              message.senderId === user?.id
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
-                            }`}
-                          >
-                            {editingMessage === message.id ? (
-                              <div className="space-y-2">
-                                <Input
-                                  value={editContent}
-                                  onChange={(e) => setEditContent(e.target.value)}
-                                  onKeyPress={(e) => {
-                                    if (e.key === 'Enter') {
-                                      e.preventDefault()
-                                      handleSaveEdit()
-                                    }
-                                  }}
-                                  className="text-sm"
-                                />
-                                <div className="flex space-x-2">
-                                  <Button size="sm" onClick={handleSaveEdit}>
-                                    Save
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                    Cancel
-                                  </Button>
-                                </div>
-                              </div>
-                            ) : (
-                              <>
-                                <div className="flex items-center justify-between mb-1">
-                                  <div className="flex items-center space-x-2">
-                                    <span className="text-xs font-medium">
-                                      {message.senderName}
-                                    </span>
-                                    <span className="text-xs opacity-70">
-                                      {format(message.timestamp, 'HH:mm')}
-                                    </span>
-                                  </div>
-                                  {message.senderId === user?.id && (
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                          <MoreVertical className="w-3 h-3" />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent>
-                                        <DropdownMenuItem onClick={() => handleEditMessage(message.id, message.content)}>
-                                          <Edit className="w-3 h-3 mr-2" />
-                                          Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleDeleteMessage(message.id)} className="text-red-600">
-                                          <Trash2 className="w-3 h-3 mr-2" />
-                                          Delete
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  )}
-                                </div>
-                                <p className="text-sm">{message.content}</p>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                      {getTypingIndicator()}
-                      <div ref={messagesEndRef} />
-                    </div>
-
-                    {/* Message Input */}
-                    <div className="p-4 border-t">
-                      <div className="flex space-x-2">
-                        <Input
-                          value={newMessage}
-                          onChange={handleTyping}
-                          onKeyPress={handleKeyPress}
-                          placeholder="Type your message..."
-                          className="flex-1"
-                        />
-                        <Button onClick={handleSendMessage} disabled={!newMessage.trim()}>
-                          <Send className="w-4 h-4" />
-                        </Button>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="w-10 h-10">
+                        <AvatarFallback>
+                          {selectedGroup?.type === 'individual' ? <User className="w-5 h-5" /> : <Users className="w-5 h-5" />}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="font-semibold">
+                          {selectedGroup ? getGroupName(selectedGroup) : 
+                           demoStudents.find(s => s.id === selectedStudent)?.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {selectedGroup?.type === 'group' ? 'Group Chat' : 'Individual Chat'}
+                        </p>
                       </div>
                     </div>
                   </div>
+                </CardHeader>
+
+                {/* Messages */}
+                <CardContent className="flex-1 overflow-y-auto p-4">
+                  <div className="space-y-4">
+                    {getCurrentMessages().map((message) => (
+                      <div
+                        key={message.id}
+                        className={`flex ${message.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                            message.senderId === user?.id
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-gray-100 dark:bg-gray-800'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs opacity-75">{message.senderName}</span>
+                            <span className="text-xs opacity-75">
+                              {format(message.timestamp, 'HH:mm')}
+                            </span>
+                          </div>
+                          {editingMessage === message.id ? (
+                            <div className="space-y-2">
+                              <Input
+                                value={editContent}
+                                onChange={(e) => setEditContent(e.target.value)}
+                                onKeyPress={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleSaveEdit()
+                                  }
+                                }}
+                                className="text-sm"
+                              />
+                              <div className="flex space-x-2">
+                                <Button size="sm" onClick={handleSaveEdit}>
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={handleCancelEdit}>
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <p className="text-sm">{message.content}</p>
+                              {message.senderId === user?.id && (
+                                <div className="flex justify-end mt-2 space-x-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleEditMessage(message.id)}
+                                    className="h-6 w-6 p-0"
+                                  >
+                                    <Edit className="w-3 h-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => deleteMessage(message.id)}
+                                    className="h-6 w-6 p-0 text-red-500"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {getTypingIndicator()}
+                    <div ref={messagesEndRef} />
+                  </div>
                 </CardContent>
+
+                {/* Message Input */}
+                <div className="p-4 border-t">
+                  <div className="flex space-x-2">
+                    <Input
+                      value={newMessage}
+                      onChange={handleTyping}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Type your message..."
+                      className="flex-1"
+                    />
+                    <Button onClick={handleSendMessage} disabled={!newMessage.trim()}>
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
               </>
             ) : (
               <CardContent className="flex-1 flex items-center justify-center">
@@ -448,34 +386,29 @@ export default function TeacherMessages() {
 
       {/* New Chat Modal */}
       {isNewChat && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-96 bg-white dark:bg-gray-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsNewChat(false)} />
+          <Card className="relative w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl">
             <CardHeader>
               <CardTitle>Start New Chat</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {mockStudents.map((student) => (
-                  <button
+                {demoStudents.map((student) => (
+                  <div
                     key={student.id}
                     onClick={() => startNewChat(student.id)}
-                    className="w-full p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                    className="p-3 rounded-lg border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="w-8 h-8">
-                        <AvatarFallback className="text-xs">
-                          {student.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium">{student.name}</span>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{student.name}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{student.group}</p>
+                      </div>
+                      <User className="w-4 h-4 text-gray-400" />
                     </div>
-                  </button>
+                  </div>
                 ))}
-              </div>
-              <div className="mt-4 flex justify-end">
-                <Button variant="outline" onClick={() => setIsNewChat(false)}>
-                  Cancel
-                </Button>
               </div>
             </CardContent>
           </Card>

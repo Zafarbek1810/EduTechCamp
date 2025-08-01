@@ -3,6 +3,7 @@ import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { enUS } from 'date-fns/locale/en-US'
 import { useAuthStore } from '@/store/authStore'
 import { useCalendarStore, type CalendarEvent } from '@/store/calendarStore'
+import { useStudentsStore } from '@/store/studentsStore'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatDistanceToNow } from 'date-fns'
@@ -22,9 +23,14 @@ const localizer = dateFnsLocalizer({
 
 export default function StudentCalendar() {
   const { user } = useAuthStore()
-  const { getEventsByUser } = useCalendarStore()
+  const { getEventsByGroup } = useCalendarStore()
+  const { getStudent } = useStudentsStore()
 
-  const userEvents = getEventsByUser(user?.id || '', user?.role || '')
+  // Get the current student's information
+  const currentStudent = getStudent(user?.id || '')
+  
+  // Get events for the student's group
+  const userEvents = currentStudent ? getEventsByGroup(currentStudent.group) : []
 
   const eventStyleGetter = (event: CalendarEvent) => {
     let color = '#3B82F6' // default blue
@@ -80,157 +86,147 @@ export default function StudentCalendar() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Calendar</h1>
-        <p className="text-gray-600 dark:text-gray-400">View your lessons, homework, and upcoming events</p>
+        <h1 className="text-3xl font-bold text-foreground">My Calendar</h1>
+        <p className="text-muted-foreground">
+          View your upcoming events and schedule
+          {currentStudent && (
+            <span className="ml-2 text-sm">
+              (Group: {currentStudent.group})
+            </span>
+          )}
+        </p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Events</CardTitle>
+            <span className="text-2xl">📅</span>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{userEvents.length}</div>
+            <p className="text-xs text-muted-foreground">
+              All events
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardHeader className="pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Upcoming</CardTitle>
+            <span className="text-2xl">⏰</span>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
-              {userEvents.filter(e => e.start > new Date()).length}
-            </div>
+            <div className="text-2xl font-bold">{upcomingEvents.length}</div>
+            <p className="text-xs text-muted-foreground">
+              Next 5 events
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Homework Due</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Lessons</CardTitle>
+            <span className="text-2xl">📚</span>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {userEvents.filter(e => e.type === 'homework' && e.start > new Date()).length}
+            <div className="text-2xl font-bold">
+              {userEvents.filter(event => event.type === 'lesson').length}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Scheduled lessons
+            </p>
           </CardContent>
         </Card>
+
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Quizzes</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Assignments</CardTitle>
+            <span className="text-2xl">📝</span>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {userEvents.filter(e => e.type === 'quiz' && e.start > new Date()).length}
+            <div className="text-2xl font-bold">
+              {userEvents.filter(event => event.type === 'homework').length}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Due assignments
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Calendar */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Calendar View</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="h-[500px] p-4">
-                <Calendar
-                  localizer={localizer}
-                  events={userEvents}
-                  startAccessor="start"
-                  endAccessor="end"
-                  style={{ height: '100%' }}
-                  eventPropGetter={eventStyleGetter}
-                  views={['month', 'week', 'day']}
-                  defaultView="month"
-                  step={60}
-                  timeslots={1}
-                  className="dark:bg-gray-800 dark:text-white"
-                  selectable={false}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Upcoming Events */}
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Upcoming Events</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {upcomingEvents.length === 0 ? (
-                  <p className="text-gray-500 dark:text-gray-400 text-center py-4">
-                    No upcoming events
-                  </p>
-                ) : (
-                  upcomingEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className="p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-lg">{getEventTypeIcon(event.type)}</span>
-                          <div>
-                            <h4 className="font-medium text-gray-900 dark:text-white">
-                              {event.title}
-                            </h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {format(event.start, 'MMM dd, yyyy HH:mm')}
-                            </p>
-                          </div>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {event.type}
-                        </Badge>
-                      </div>
+      {/* Upcoming Events */}
+      {upcomingEvents.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Upcoming Events</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {upcomingEvents.map((event) => (
+                <div key={event.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="text-2xl">{getEventTypeIcon(event.type)}</div>
+                    <div>
+                      <h4 className="font-medium">{event.title}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {formatDistanceToNow(event.start, { addSuffix: true })}
+                      </p>
                       {event.description && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                        <p className="text-sm text-muted-foreground mt-1">
                           {event.description}
                         </p>
                       )}
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                        {formatDistanceToNow(event.start, { addSuffix: true })}
-                      </p>
                     </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                  </div>
+                  <Badge variant="secondary">
+                    {event.type}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-          {/* Event Type Legend */}
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle className="text-sm">Event Types</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                  <span className="text-sm">Lessons</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-red-500 rounded"></div>
-                  <span className="text-sm">Homework</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-500 rounded"></div>
-                  <span className="text-sm">Quizzes</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-yellow-500 rounded"></div>
-                  <span className="text-sm">Exams</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      {/* Calendar */}
+      <Card>
+        <CardContent className="p-0">
+          <div className="h-[600px] p-4">
+            <Calendar
+              localizer={localizer}
+              events={userEvents}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: '100%' }}
+              eventPropGetter={eventStyleGetter}
+              views={['month', 'week', 'day']}
+              defaultView="month"
+              step={60}
+              timeslots={1}
+              className="dark:bg-gray-800 dark:text-white"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* No Events Message */}
+      {userEvents.length === 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>No Events Found</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              {currentStudent 
+                ? `No events have been scheduled for your group (${currentStudent.group}) yet.`
+                : 'No events found. Please contact your administrator if you believe this is an error.'
+              }
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 } 

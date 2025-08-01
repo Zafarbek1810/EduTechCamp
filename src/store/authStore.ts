@@ -47,6 +47,20 @@ const mockUsers: User[] = [
     name: 'Sarah Parent',
     role: 'parent',
     email: 'parent1@edu.com'
+  },
+  {
+    id: '5',
+    username: 'teacher2',
+    name: 'Jane Teacher',
+    role: 'teacher',
+    email: 'teacher2@edu.com'
+  },
+  {
+    id: '6',
+    username: 'student2',
+    name: 'Bob Student',
+    role: 'student',
+    email: 'student2@edu.com'
   }
 ]
 

@@ -4,6 +4,7 @@ import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { enUS } from 'date-fns/locale/en-US'
 import { useAuthStore } from '@/store/authStore'
 import { useCalendarStore, type CalendarEvent } from '@/store/calendarStore'
+import { useGroupsStore } from '@/store/groupsStore'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -11,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus,  Trash2 } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 const locales = {
@@ -29,6 +30,7 @@ const localizer = dateFnsLocalizer({
 export default function TeacherCalendar() {
   const { user } = useAuthStore()
   const { addEvent, updateEvent, deleteEvent, getEventsByUser } = useCalendarStore()
+  const { getGroupsByTeacher } = useGroupsStore()
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
@@ -39,10 +41,11 @@ export default function TeacherCalendar() {
     type: 'lesson' as 'lesson' | 'homework' | 'quiz' | 'exam',
     start: new Date(),
     end: new Date(),
-    groupId: 'group1'
+    groupId: ''
   })
 
   const userEvents = getEventsByUser(user?.id || '', user?.role || '')
+  const teacherGroups = getGroupsByTeacher(user?.id || '')
 
   const eventStyleGetter = (event: CalendarEvent) => {
     return {
@@ -75,13 +78,18 @@ export default function TeacherCalendar() {
       type: event.type,
       start: event.start,
       end: event.end,
-      groupId: event.groupId || 'group1'
+      groupId: event.groupId || ''
     })
     setIsEditMode(true)
     setIsDialogOpen(true)
   }
 
   const handleSubmit = () => {
+    if (!formData.groupId) {
+      alert('Please select a group for this event')
+      return
+    }
+
     if (isEditMode && selectedEvent) {
       updateEvent(selectedEvent.id, {
         ...formData,
@@ -113,7 +121,7 @@ export default function TeacherCalendar() {
       type: 'lesson',
       start: new Date(),
       end: new Date(),
-      groupId: 'group1'
+      groupId: ''
     })
     setSelectedEvent(null)
     setIsEditMode(false)
@@ -168,6 +176,25 @@ export default function TeacherCalendar() {
                     <SelectItem value="homework">Homework</SelectItem>
                     <SelectItem value="quiz">Quiz</SelectItem>
                     <SelectItem value="exam">Exam</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="groupId">Group</Label>
+                <Select
+                  value={formData.groupId}
+                  onValueChange={(value: string) => setFormData(prev => ({ ...prev, groupId: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a group" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teacherGroups.map((group) => (
+                      <SelectItem key={group.id} value={group.name}>
+                        {group.name} - {group.subject}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

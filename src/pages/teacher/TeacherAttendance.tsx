@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useAttendanceStore, type AttendanceRecord, type StudentAttendance } from '@/store/attendanceStore'
 import { useGroupsStore } from '@/store/groupsStore'
@@ -9,12 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, XCircle, FileText, Award, Users, Save } from 'lucide-react'
+import { CheckCircle, XCircle, FileText, Award, Users, Save, AlertCircle } from 'lucide-react'
 
 export default function TeacherAttendance() {
   const { user } = useAuthStore()
   const { getGroupsByTeacher } = useGroupsStore()
-  const { getStudentsByTeacher } = useStudentsStore()
+  const { students, updateStudent } = useStudentsStore()
   const { getLessonsByTeacher } = useLessonsStore()
   const { 
     getAttendanceByDate, 
@@ -29,38 +29,59 @@ export default function TeacherAttendance() {
   const [isLoading, setIsLoading] = useState(false)
 
   const teacherGroups = getGroupsByTeacher(user?.id || '')
-  const students = getStudentsByTeacher(user?.id || '')
   const lessons = getLessonsByTeacher(user?.id || '')
 
+  // Get students in the selected group
   const getStudentsInGroup = (groupId: string) => {
-    return students.filter(student => student.group === groupId)
+    const group = teacherGroups.find(g => g.id === groupId)
+    if (!group) return []
+    return students.filter(student => student.group === group.name)
   }
 
   const getLessonsForGroup = (groupId: string) => {
     return lessons.filter(lesson => lesson.groupId === groupId)
   }
 
+  // Calculate points based on attendance and homework
+  const calculatePoints = (isPresent: boolean, homeworkDone: boolean) => {
+    let points = 0
+    if (isPresent) {
+      points += 10 // 10 points for attendance
+    } else {
+      points -= 5 // -5 points for absence
+    }
+    
+    if (homeworkDone) {
+      points += 10 // 10 points for homework
+    } else {
+      points -= 5 // -5 points for no homework
+    }
+    
+    return points
+  }
+
+  // Load attendance data when group, date, or lesson changes
+  useEffect(() => {
+    if (selectedGroup && selectedDate) {
+      loadAttendanceData()
+    }
+  }, [selectedGroup, selectedDate, selectedLesson])
+
   const handleGroupChange = (groupId: string) => {
     setSelectedGroup(groupId)
     setSelectedLesson('')
     setAttendanceData([])
-    
-    if (groupId && selectedDate) {
-      loadAttendanceData(groupId, selectedDate)
-    }
   }
 
   const handleDateChange = (date: string) => {
     setSelectedDate(date)
-    
-    if (selectedGroup && date) {
-      loadAttendanceData(selectedGroup, date)
-    }
   }
 
-  const loadAttendanceData = (groupId: string, date: string) => {
-    const existingRecord = getAttendanceByDate(groupId, date)
-    const groupStudents = getStudentsInGroup(groupId)
+  const loadAttendanceData = () => {
+    if (!selectedGroup || !selectedDate) return
+
+    const existingRecord = getAttendanceByDate(selectedGroup, selectedDate)
+    const groupStudents = getStudentsInGroup(selectedGroup)
     
     if (existingRecord) {
       setAttendanceData(existingRecord.records)
@@ -79,13 +100,21 @@ export default function TeacherAttendance() {
     }
   }
 
-  const handleAttendanceChange = (studentId: string, field: keyof StudentAttendance, value: any) => {
+  const handleAttendanceChange = (studentId: string, field: keyof StudentAttendance, value: boolean | string | number) => {
     setAttendanceData(prev => 
-      prev.map(record => 
-        record.studentId === studentId 
-          ? { ...record, [field]: value }
-          : record
-      )
+      prev.map(record => {
+        if (record.studentId === studentId) {
+          const updatedRecord = { ...record, [field]: value }
+          
+          // Recalculate points when attendance or homework changes
+          if (field === 'isPresent' || field === 'homeworkDone') {
+            updatedRecord.points = calculatePoints(updatedRecord.isPresent, updatedRecord.homeworkDone)
+          }
+          
+          return updatedRecord
+        }
+        return record
+      })
     )
   }
 
@@ -112,9 +141,25 @@ export default function TeacherAttendance() {
       } else {
         addAttendanceRecord(attendanceRecord)
       }
+
+      // Update students' points in the students store
+      attendanceData.forEach(record => {
+        const student = students.find(s => s.id === record.studentId)
+        if (student) {
+          const currentPoints = student.points || 0
+          const newPoints = currentPoints + record.points
+          updateStudent(record.studentId, { points: newPoints })
+        }
+      })
       
-      alert('Attendance saved successfully!')
-    } catch (error) {
+      alert('Attendance saved successfully! Points have been updated for all students.')
+      
+      // Clear the form after successful save
+      setSelectedGroup('')
+      setSelectedDate('')
+      setSelectedLesson('')
+      setAttendanceData([])
+    } catch {
       alert('Error saving attendance')
     } finally {
       setIsLoading(false)
@@ -123,6 +168,10 @@ export default function TeacherAttendance() {
 
   const getLessonName = (lessonId: string) => {
     return lessons.find(l => l.id === lessonId)?.topic || 'Unknown Lesson'
+  }
+
+  const getGroupName = (groupId: string) => {
+    return teacherGroups.find(g => g.id === groupId)?.name || 'Unknown Group'
   }
 
   return (
@@ -194,13 +243,49 @@ export default function TeacherAttendance() {
         </CardContent>
       </Card>
 
+      {/* Points System Info */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Award className="w-5 h-5" />
+            <span>Points System</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <h4 className="font-medium">Attendance Points:</h4>
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span>Present: +10 points</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <XCircle className="w-4 h-4 text-red-500" />
+                <span>Absent: -5 points</span>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-medium">Homework Points:</h4>
+              <div className="flex items-center space-x-2">
+                <FileText className="w-4 h-4 text-green-500" />
+                <span>Completed: +10 points</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 text-red-500" />
+                <span>Not Done: -5 points</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Attendance Table */}
       {selectedGroup && selectedDate && attendanceData.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Users className="w-5 h-5" />
-              <span>Attendance for {new Date(selectedDate).toLocaleDateString()}</span>
+              <span>Attendance for {getGroupName(selectedGroup)} - {new Date(selectedDate).toLocaleDateString()}</span>
               {selectedLesson && (
                 <Badge variant="secondary">
                   {getLessonName(selectedLesson)}
@@ -208,7 +293,7 @@ export default function TeacherAttendance() {
               )}
             </CardTitle>
             <CardDescription>
-              Mark attendance, homework completion, and assign points (0-10)
+              Mark attendance and homework completion. Points are automatically calculated.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -234,16 +319,17 @@ export default function TeacherAttendance() {
                           size="sm"
                           variant={record.isPresent ? "default" : "outline"}
                           onClick={() => handleAttendanceChange(record.studentId, 'isPresent', !record.isPresent)}
+                          className={record.isPresent ? "bg-green-600 hover:bg-green-700 text-white" : ""}
                         >
                           {record.isPresent ? (
                             <>
                               <CheckCircle className="w-4 h-4 mr-1" />
-                              Present
+                              Present (+10)
                             </>
                           ) : (
                             <>
                               <XCircle className="w-4 h-4 mr-1" />
-                              Absent
+                              Absent (-5)
                             </>
                           )}
                         </Button>
@@ -256,23 +342,21 @@ export default function TeacherAttendance() {
                           variant={record.homeworkDone ? "default" : "outline"}
                           onClick={() => handleAttendanceChange(record.studentId, 'homeworkDone', !record.homeworkDone)}
                           disabled={!record.isPresent}
+                          className={record.homeworkDone ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
                         >
                           <FileText className="w-4 h-4 mr-1" />
-                          {record.homeworkDone ? 'Done' : 'Not Done'}
+                          {record.homeworkDone ? 'Done (+10)' : 'Not Done (-5)'}
                         </Button>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        <Input
-                          type="number"
-                          min="0"
-                          max="10"
-                          value={record.points}
-                          onChange={(e) => handleAttendanceChange(record.studentId, 'points', parseInt(e.target.value) || 0)}
-                          className="w-20"
-                          disabled={!record.isPresent}
-                        />
+                        <Badge 
+                          variant={record.points >= 0 ? "default" : "destructive"}
+                          className="text-sm font-medium"
+                        >
+                          {record.points > 0 ? '+' : ''}{record.points} points
+                        </Badge>
                         <Award className="w-4 h-4 text-gray-500" />
                       </div>
                     </TableCell>
@@ -294,10 +378,10 @@ export default function TeacherAttendance() {
               <Button 
                 onClick={handleSave} 
                 disabled={isLoading || !selectedLesson}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white"
               >
                 <Save className="w-4 h-4" />
-                <span>{isLoading ? 'Saving...' : 'Save Attendance'}</span>
+                <span>{isLoading ? 'Saving...' : 'Save Attendance & Update Points'}</span>
               </Button>
             </div>
           </CardContent>
@@ -315,10 +399,25 @@ export default function TeacherAttendance() {
               <p>1. Select a group from the dropdown above</p>
               <p>2. Choose a date for the attendance record</p>
               <p>3. Select the lesson for this session</p>
-              <p>4. Mark attendance, homework completion, and assign points (0-10)</p>
-              <p>5. Add optional notes for each student</p>
-              <p>6. Click "Save Attendance" to save the data</p>
+              <p>4. Mark attendance and homework completion for each student</p>
+              <p>5. Points are automatically calculated based on attendance and homework</p>
+              <p>6. Add optional notes for each student</p>
+              <p>7. Click "Save Attendance & Update Points" to save the data and update student points</p>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* No Students Message */}
+      {selectedGroup && selectedDate && attendanceData.length === 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>No Students Found</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              No students are currently assigned to the selected group. Please assign students to the group first.
+            </p>
           </CardContent>
         </Card>
       )}
