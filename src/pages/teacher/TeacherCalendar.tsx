@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, Calendar as CalendarIcon } from 'lucide-react'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 const locales = {
@@ -34,6 +34,7 @@ export default function TeacherCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
+  const [currentView, setCurrentView] = useState<'month' | 'week' | 'day'>('month')
   
   const [formData, setFormData] = useState({
     title: '',
@@ -125,6 +126,10 @@ export default function TeacherCalendar() {
     })
     setSelectedEvent(null)
     setIsEditMode(false)
+  }
+
+  const handleViewChange = (view: 'month' | 'week' | 'day') => {
+    setCurrentView(view)
   }
 
   return (
@@ -295,6 +300,52 @@ export default function TeacherCalendar() {
 
       {/* Calendar */}
       <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Calendar View</CardTitle>
+            <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <Button
+                variant={currentView === 'month' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => handleViewChange('month')}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all duration-200 ${
+                  currentView === 'month' 
+                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                <CalendarIcon className="w-4 h-4" />
+                <span className="font-medium">Month</span>
+              </Button>
+              <Button
+                variant={currentView === 'week' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => handleViewChange('week')}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all duration-200 ${
+                  currentView === 'week' 
+                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                <CalendarIcon className="w-4 h-4" />
+                <span className="font-medium">Week</span>
+              </Button>
+              <Button
+                variant={currentView === 'day' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => handleViewChange('day')}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-all duration-200 ${
+                  currentView === 'day' 
+                    ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm' 
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                <CalendarIcon className="w-4 h-4" />
+                <span className="font-medium">Day</span>
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
         <CardContent className="p-0">
           <div className="h-[600px] p-4">
             <Calendar
@@ -308,7 +359,8 @@ export default function TeacherCalendar() {
               onSelectEvent={handleEventSelect}
               eventPropGetter={eventStyleGetter}
               views={['month', 'week', 'day']}
-              defaultView="month"
+              view={currentView}
+              onView={handleViewChange}
               step={60}
               timeslots={1}
               className="dark:bg-gray-800 dark:text-white"

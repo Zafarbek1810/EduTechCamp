@@ -23,6 +23,7 @@ import StudentCalendar from './pages/student/StudentCalendar'
 import StudentQuizzes from './pages/student/StudentQuizzes'
 import StudentMessages from './pages/student/StudentMessages'
 import StudentHomework from './pages/student/StudentHomework'
+import StudentGames from './pages/student/StudentGames'
 import ParentDashboard from './pages/parent/ParentDashboard'
 import ParentChild from './pages/parent/ParentChild'
 import ParentPayments from './pages/parent/ParentPayments'
@@ -142,6 +143,11 @@ const links = [
     role: 'student',
     path: '/student/homework',
     element: <StudentHomework />
+  },
+  {
+    role: 'student',
+    path: '/student/games',
+    element: <StudentGames />
   },
   {
     role: 'parent',

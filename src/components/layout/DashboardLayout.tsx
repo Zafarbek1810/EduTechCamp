@@ -1,25 +1,29 @@
-import type { ReactNode } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { useChatStore } from '@/store/chatStore'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { 
   LayoutDashboard, 
   Users, 
-  ShoppingCart, 
+  GraduationCap, 
   FileText, 
   BarChart3, 
-  LogOut,
-  User,
-  GraduationCap,
+  ShoppingCart,
+  BookOpen,
   CheckCircle,
-  Menu,
-  X,
   Calendar,
   ClipboardList,
   MessageSquare,
-  BookOpen
+  Gamepad2,
+  LogOut,
+  X,
+  Moon,
+  Sun,
+  Menu,
+  User
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -27,12 +31,19 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuthStore()
+  const { getUnreadCount, messages, groups } = useChatStore()
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isDark, setIsDark] = useState(() =>
     typeof window !== 'undefined' ? document.documentElement.classList.contains('dark') : false
   )
+  const [updateTrigger, setUpdateTrigger] = useState(0)
+
+  // Force re-render when messages or groups change to update badge counts
+  useEffect(() => {
+    setUpdateTrigger(prev => prev + 1)
+  }, [messages, groups])
 
   console.log('DashboardLayout - user:', user)
   console.log('DashboardLayout - location:', location.pathname)
@@ -45,6 +56,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const getNavigationItems = () => {
     if (!user) return []
+
+    // Force recalculation of unread count
+    const unreadCount = getUnreadCount(user.id)
 
     switch (user.role) {
       case 'admin':
@@ -65,7 +79,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           { name: 'Statistics', href: '/teacher/statistics', icon: BarChart3 },
           { name: 'Calendar', href: '/teacher/calendar', icon: Calendar },
           { name: 'Quizzes', href: '/teacher/quizzes', icon: ClipboardList },
-          { name: 'Messages', href: '/teacher/messages', icon: MessageSquare },
+          { 
+            name: 'Messages', 
+            href: '/teacher/messages', 
+            icon: MessageSquare,
+            badge: unreadCount
+          },
         ]
       case 'student':
         return [
@@ -73,7 +92,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           { name: 'Homework', href: '/student/homework', icon: BookOpen },
           { name: 'Calendar', href: '/student/calendar', icon: Calendar },
           { name: 'Quizzes', href: '/student/quizzes', icon: ClipboardList },
-          { name: 'Messages', href: '/student/messages', icon: MessageSquare },
+          { name: 'Games', href: '/student/games', icon: Gamepad2 },
+          { 
+            name: 'Messages', 
+            href: '/student/messages', 
+            icon: MessageSquare,
+            badge: unreadCount
+          },
           { name: 'Shop', href: '/student/shop', icon: ShoppingCart },
         ]
       case 'parent':
@@ -152,12 +177,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {navigationItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.href
+              const hasBadge = 'badge' in item && item.badge > 0
               
               return (
                 <Button
                   key={item.name}
                   variant={isActive ? "default" : "ghost"}
-                  className={`w-full justify-start ${
+                  className={`w-full justify-start relative ${
                     isActive 
                       ? 'bg-blue-600 text-white hover:bg-blue-700 hover:text-white' 
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
@@ -165,7 +191,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   onClick={() => handleNavigation(item.href)}
                 >
                   <Icon className="w-4 h-4 mr-3" />
-                  {item.name}
+                  <span className="flex-1 text-left">{item.name}</span>
+                  {hasBadge && (
+                    <Badge 
+                      variant="destructive" 
+                      className="ml-auto h-5 w-5 rounded-full p-0 text-xs font-medium flex items-center justify-center"
+                    >
+                      {item.badge > 99 ? '99+' : item.badge}
+                    </Badge>
+                  )}
                 </Button>
               )
             })}
@@ -198,8 +232,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main Content */}
       <div className="lg:ml-64">
         {/* Header */}
-        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between h-16 px-4 lg:px-6">
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
@@ -209,28 +243,26 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               >
                 <Menu className="w-5 h-5" />
               </Button>
-              <h2 className="text-lg sm:text-2xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 {navigationItems.find(item => item.href === location.pathname)?.name || 'Dashboard'}
               </h2>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
-                Welcome back, {user?.name}
-              </span>
-              {/* <Button
+            
+            <div className="flex items-center space-x-2">
+              <Button
                 variant="ghost"
-                size="icon"
-                aria-label="Toggle dark mode"
+                size="sm"
                 onClick={toggleDarkMode}
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
               >
-                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </Button> */}
+                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </Button>
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="p-4 sm:p-6">
+        <main className="p-4 lg:p-6">
           {children}
         </main>
       </div>

@@ -50,6 +50,16 @@ export default function TeacherMessages() {
     }
   }, [selectedGroup, user])
 
+  // Mark all messages as read when visiting the messages page
+  useEffect(() => {
+    if (user) {
+      const userGroups = getGroupsByUser(user.id)
+      userGroups.forEach(group => {
+        markGroupAsRead(group.id, user.id)
+      })
+    }
+  }, [user])
+
   const handleSendMessage = () => {
     if (!newMessage.trim() || !user) return
 

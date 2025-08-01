@@ -7,52 +7,25 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { BookOpen, Clock, CheckCircle, AlertCircle, Calendar } from 'lucide-react'
-
-// Mock homework data
-const mockHomework = [
-  {
-    id: '1',
-    title: 'Math: Algebra Problems',
-    subject: 'Mathematics',
-    dueDate: '2025-08-02',
-    priority: 'high',
-    estimatedTime: 45,
-    completed: false,
-    description: 'Complete exercises 1-15 from Chapter 4',
-  },
-  {
-    id: '2',
-    title: 'English: Essay Draft',
-    subject: 'English Literature',
-    dueDate: '2025-08-05',
-    priority: 'medium',
-    estimatedTime: 90,
-    completed: false,
-    description: 'Write a 500-word essay on "The Impact of Technology"',
-  },
-  {
-    id: '3',
-    title: 'Science: Lab Report',
-    subject: 'Chemistry',
-    dueDate: '2025-08-01',
-    priority: 'high',
-    estimatedTime: 60,
-    completed: true,
-    description: 'Complete lab report for the acid-base experiment',
-  },
-]
+import { useAuthStore } from '@/store/authStore'
+import { useHomeworkStore } from '@/store/homeworkStore'
 
 export default function StudentHomework() {
+  const { user } = useAuthStore()
+  const { 
+    getHomeworkByStudent, 
+    getPendingHomework, 
+    getCompletedHomework,
+    toggleCompletion 
+  } = useHomeworkStore()
   const [selectedHomework, setSelectedHomework] = useState<string | null>(null)
-  const [completedTasks, setCompletedTasks] = useState<string[]>(['3'])
 
-  const toggleTaskCompletion = (taskId: string) => {
-    setCompletedTasks(prev => 
-      prev.includes(taskId) 
-        ? prev.filter(id => id !== taskId)
-        : [...prev, taskId]
-    )
-  }
+  // Get homework for the current student
+  const studentHomework = getHomeworkByStudent(user?.id || '')
+  const pendingTasks = getPendingHomework(user?.id || '')
+  const completedTasksData = getCompletedHomework(user?.id || '')
+  const totalTasks = studentHomework.length
+  const completionRate = totalTasks > 0 ? (completedTasksData.length / totalTasks) * 100 : 0
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -70,11 +43,6 @@ export default function StudentHomework() {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     return diffDays
   }
-
-  const pendingTasks = mockHomework.filter(task => !completedTasks.includes(task.id))
-  const completedTasksData = mockHomework.filter(task => completedTasks.includes(task.id))
-  const totalTasks = mockHomework.length
-  const completionRate = (completedTasksData.length / totalTasks) * 100
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -197,7 +165,7 @@ export default function StudentHomework() {
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation()
-                              toggleTaskCompletion(task.id)
+                              toggleCompletion(task.id)
                             }}
                           >
                             Mark Complete
@@ -223,12 +191,37 @@ export default function StudentHomework() {
                           {task.subject}
                         </p>
                       </div>
-                      <Badge className="bg-green-500 text-white">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Completed
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-green-500 text-white">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Completed
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            toggleCompletion(task.id)
+                          }}
+                        >
+                          Mark Pending
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {task.description}
+                    </p>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        ~{task.estimatedTime} min
+                      </span>
+                      <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
+                      <span>Completed: {task.updatedAt.toLocaleDateString()}</span>
+                    </div>
+                  </CardContent>
                 </Card>
               ))}
             </TabsContent>
@@ -250,10 +243,10 @@ export default function StudentHomework() {
                 </p>
                 <div className="space-y-2">
                   <p className="text-sm font-medium">
-                    Selected: {mockHomework.find(h => h.id === selectedHomework)?.title}
+                    Selected: {studentHomework.find(h => h.id === selectedHomework)?.title}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Estimated time: {mockHomework.find(h => h.id === selectedHomework)?.estimatedTime} minutes
+                    Estimated time: {studentHomework.find(h => h.id === selectedHomework)?.estimatedTime} minutes
                   </p>
                 </div>
               </CardContent>
