@@ -18,12 +18,14 @@ import TeacherStatistics from './pages/teacher/TeacherStatistics'
 import TeacherCalendar from './pages/teacher/TeacherCalendar'
 import TeacherQuizzes from './pages/teacher/TeacherQuizzes'
 import TeacherMessages from './pages/teacher/TeacherMessages'
+import TeacherAITestGenerator from './pages/teacher/TeacherAITestGenerator'
 import StudentShop from './pages/student/StudentShop'
 import StudentCalendar from './pages/student/StudentCalendar'
 import StudentQuizzes from './pages/student/StudentQuizzes'
 import StudentMessages from './pages/student/StudentMessages'
 import StudentHomework from './pages/student/StudentHomework'
 import StudentGames from './pages/student/StudentGames'
+import StudentTests from './pages/student/StudentTests'
 import ParentDashboard from './pages/parent/ParentDashboard'
 import ParentChild from './pages/parent/ParentChild'
 import ParentPayments from './pages/parent/ParentPayments'
@@ -111,6 +113,11 @@ const links = [
   },
   {
     role: 'teacher',
+    path: '/teacher/ai-test-generator',
+    element: <TeacherAITestGenerator />
+  },
+  {
+    role: 'teacher',
     path: '/teacher/messages',
     element: <TeacherMessages />
   },
@@ -148,6 +155,11 @@ const links = [
     role: 'student',
     path: '/student/games',
     element: <StudentGames />
+  },
+  {
+    role: 'student',
+    path: '/student/tests',
+    element: <StudentTests />
   },
   {
     role: 'parent',

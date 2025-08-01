@@ -17,6 +17,7 @@ import {
   ClipboardList,
   MessageSquare,
   Gamepad2,
+  Bot,
   LogOut,
   X,
   Moon,
@@ -76,6 +77,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           { name: 'My Groups', href: '/teacher/groups', icon: Users },
           { name: 'Lessons', href: '/teacher/lessons', icon: BookOpen },
           { name: 'Attendance', href: '/teacher/attendance', icon: CheckCircle },
+          { name: 'AI Test Generator', href: '/teacher/ai-test-generator', icon: Bot },
           { name: 'Statistics', href: '/teacher/statistics', icon: BarChart3 },
           { name: 'Calendar', href: '/teacher/calendar', icon: Calendar },
           { name: 'Quizzes', href: '/teacher/quizzes', icon: ClipboardList },
@@ -93,6 +95,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           { name: 'Calendar', href: '/student/calendar', icon: Calendar },
           { name: 'Quizzes', href: '/student/quizzes', icon: ClipboardList },
           { name: 'Games', href: '/student/games', icon: Gamepad2 },
+          { name: 'Tests', href: '/student/tests', icon: FileText },
           { 
             name: 'Messages', 
             href: '/student/messages', 
