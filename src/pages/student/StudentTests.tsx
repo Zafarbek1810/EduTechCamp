@@ -1,25 +1,23 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
-  FileText, 
+  Brain, 
   Clock, 
-  CheckCircle, 
+  Target, 
+  BookOpen, 
+  CheckCircle,
   XCircle,
   Play,
-  BarChart3,
   Award,
-  Brain,
-  Target,
-  Star,
-  Sparkles,
-  Zap
+  BarChart3
 } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
-import { useTestStore, Test, TestResult } from '@/store/testStore'
+import { useTestStore } from '@/store/testStore'
+import type { Test, TestResult } from '@/store/testStore'
 
 export default function StudentTests() {
   const { t } = useTranslation()
@@ -85,7 +83,7 @@ export default function StudentTests() {
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <FileText className="h-8 w-8 text-white" />
+              <BookOpen className="h-8 w-8 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -289,7 +287,7 @@ export default function StudentTests() {
 
                   <div className="text-center pt-4">
                     <Button onClick={resetTest} className="flex items-center gap-2 mx-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg">
-                      <FileText className="h-4 w-4" />
+                      <BookOpen className="h-4 w-4" />
                       {t('student.backToTests')}
                     </Button>
                   </div>
@@ -329,7 +327,7 @@ export default function StudentTests() {
                   <CardContent className="pt-8">
                     <div className="text-center py-12">
                       <div className="w-20 h-20 bg-gradient-to-br from-gray-400 to-blue-400 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <FileText className="h-10 w-10 text-white" />
+                        <BookOpen className="h-10 w-10 text-white" />
                       </div>
                       <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('student.noTestsAvailableAtMoment')}</h3>
                       <p className="text-gray-500">Check back later for new tests!</p>
@@ -409,7 +407,7 @@ export default function StudentTests() {
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                                <FileText className="h-5 w-5 text-white" />
+                                <BookOpen className="h-5 w-5 text-white" />
                               </div>
                               <h3 className="font-semibold text-lg">{test?.title || 'Test'}</h3>
                             </div>

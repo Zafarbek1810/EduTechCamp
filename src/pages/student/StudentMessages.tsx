@@ -1,26 +1,27 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAuthStore } from '@/store/authStore'
-import { useChatStore, type ChatGroup } from '@/store/chatStore'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Send, Users, User, Edit, Trash2, MoreVertical, Plus } from 'lucide-react'
-import { format } from 'date-fns'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { 
+  Send, 
+  Users, 
+  User, 
+  Edit, 
+  Trash2, 
+  Plus
+} from 'lucide-react'
+import { useAuthStore } from '@/store/authStore'
+import { useChatStore } from '@/store/chatStore'
+import { formatDistanceToNow } from 'date-fns'
 
 export default function StudentMessages() {
   const { t } = useTranslation()
   const { user } = useAuthStore()
-  const { messages, addMessage, getMessagesByGroup, getMessagesByParticipants, getGroupsByUser, markGroupAsRead, setTyping, getTypingUsers, deleteMessage, editMessage, getMessagesForStudent } = useChatStore()
-  const [selectedGroup, setSelectedGroup] = useState<ChatGroup | null>(null)
+  const { messages, addMessage, getMessagesByGroup, getMessagesByParticipants, getGroupsByUser, markGroupAsRead, setTyping, getTypingUsers, deleteMessage, editMessage } = useChatStore()
+  const [selectedGroup, setSelectedGroup] = useState<any | null>(null)
   const [selectedTeacher, setSelectedTeacher] = useState<string | null>(null)
   const [newMessage, setNewMessage] = useState('')
   const [editingMessage, setEditingMessage] = useState<string | null>(null)
@@ -128,9 +129,9 @@ export default function StudentMessages() {
     return []
   }
 
-  const getGroupName = (group: ChatGroup) => {
+  const getGroupName = (group: any) => {
     if (group.type === 'individual') {
-      const otherParticipant = group.participants.find(p => p !== user?.id)
+      const otherParticipant = group.participants.find((p: string) => p !== user?.id)
       const teacher = demoTeachers.find(t => t.id === otherParticipant)
       return teacher ? teacher.name : 'Individual Chat'
     }
@@ -322,7 +323,7 @@ export default function StudentMessages() {
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-xs opacity-75">{message.senderName}</span>
                             <span className="text-xs opacity-75">
-                              {format(message.timestamp, 'HH:mm')}
+                              {formatDistanceToNow(message.timestamp, { addSuffix: true })}
                             </span>
                           </div>
                           {editingMessage === message.id ? (

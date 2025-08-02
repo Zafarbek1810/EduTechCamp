@@ -1,16 +1,20 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
-import { format, parse, startOfWeek, getDay } from 'date-fns'
-import { enUS } from 'date-fns/locale/en-US'
-import { useAuthStore } from '@/store/authStore'
-import { useCalendarStore, type CalendarEvent } from '@/store/calendarStore'
-import { useStudentsStore } from '@/store/studentsStore'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
+import { format, parse, startOfWeek, getDay } from 'date-fns'
+import { enUS } from 'date-fns/locale'
+import { 
+  Calendar as CalendarIcon
+} from 'lucide-react'
+import { useAuthStore } from '@/store/authStore'
+import { useCalendarStore } from '@/store/calendarStore'
+import type { CalendarEvent } from '@/store/calendarStore'
+import type { View } from 'react-big-calendar'
+import { useStudentsStore } from '@/store/studentsStore'
 import { formatDistanceToNow } from 'date-fns'
-import { Calendar as CalendarIcon } from 'lucide-react'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 const locales = {
@@ -30,7 +34,7 @@ export default function StudentCalendar() {
   const { user } = useAuthStore()
   const { getEventsByGroup } = useCalendarStore()
   const { getStudent } = useStudentsStore()
-  const [currentView, setCurrentView] = useState<'month' | 'week' | 'day'>('month')
+  const [currentView, setCurrentView] = useState<View>('month')
 
   // Get the current student's information
   const currentStudent = getStudent(user?.id || '')
@@ -88,7 +92,7 @@ export default function StudentCalendar() {
     }
   }
 
-  const handleViewChange = (view: 'month' | 'week' | 'day') => {
+  const handleViewChange = (view: View) => {
     setCurrentView(view)
   }
 
@@ -194,7 +198,7 @@ export default function StudentCalendar() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {upcomingEvents.map((event, index) => (
+              {upcomingEvents.map((event) => (
                 <div 
                   key={event.id} 
                   className="flex items-center justify-between p-6 border border-purple-200 dark:border-purple-700 rounded-xl bg-white dark:bg-gray-800 hover:shadow-lg hover:scale-[1.02] transition-all duration-200"

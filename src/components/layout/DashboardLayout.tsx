@@ -1,4 +1,5 @@
-import { ReactNode, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import type { ReactNode } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -22,8 +23,6 @@ import {
   Bot,
   LogOut,
   X,
-  Moon,
-  Sun,
   Menu,
   User
 } from 'lucide-react'
@@ -35,19 +34,10 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { t } = useTranslation()
   const { user, logout } = useAuthStore()
-  const { getUnreadCount, messages, groups } = useChatStore()
+  const { getUnreadCount } = useChatStore()
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [isDark, setIsDark] = useState(() =>
-    typeof window !== 'undefined' ? document.documentElement.classList.contains('dark') : false
-  )
-  const [updateTrigger, setUpdateTrigger] = useState(0)
-
-  // Force re-render when messages or groups change to update badge counts
-  useEffect(() => {
-    setUpdateTrigger(prev => prev + 1)
-  }, [messages, groups])
 
   console.log('DashboardLayout - user:', user)
   console.log('DashboardLayout - location:', location.pathname)
@@ -125,28 +115,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     setSidebarOpen(false) // Close sidebar on mobile after navigation
   }
 
-  const toggleDarkMode = () => {
-    const html = document.documentElement
-    if (html.classList.contains('dark')) {
-      html.classList.remove('dark')
-      setIsDark(false)
-      localStorage.setItem('theme', 'light')
-    } else {
-      html.classList.add('dark')
-      setIsDark(true)
-      localStorage.setItem('theme', 'dark')
-    }
-  }
-
   // On mount, respect saved theme
   useEffect(() => {
     const saved = localStorage.getItem('theme')
     if (saved === 'dark') {
       document.documentElement.classList.add('dark')
-      setIsDark(true)
     } else if (saved === 'light') {
       document.documentElement.classList.remove('dark')
-      setIsDark(false)
     }
   }, [])
 
@@ -183,7 +158,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {navigationItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.href
-              const hasBadge = 'badge' in item && item.badge > 0
+              const hasBadge = 'badge' in item && (item.badge ?? 0) > 0
               
               return (
                 <Button
@@ -203,7 +178,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       variant="destructive" 
                       className="ml-auto h-5 w-5 rounded-full p-0 text-xs font-medium flex items-center justify-center"
                     >
-                      {item.badge > 99 ? '99+' : item.badge}
+                      {(item.badge ?? 0) > 99 ? '99+' : item.badge}
                     </Badge>
                   )}
                 </Button>

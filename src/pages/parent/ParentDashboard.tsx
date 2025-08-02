@@ -12,7 +12,6 @@ import {
   Award,
   User,
   Mail,
-  Star,
   Target,
   CheckCircle,
   AlertCircle

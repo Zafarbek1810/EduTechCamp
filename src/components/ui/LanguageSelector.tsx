@@ -1,6 +1,6 @@
 import { useLanguage } from '@/lib/useLanguage'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
-import { ChevronDown, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 
 export default function LanguageSelector() {
   const { currentLanguage, changeLanguage, languages } = useLanguage()

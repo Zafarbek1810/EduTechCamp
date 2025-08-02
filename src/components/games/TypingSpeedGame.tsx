@@ -7,11 +7,10 @@ import { Progress } from '@/components/ui/progress'
 import { 
   Keyboard, 
   Clock, 
-  Trophy, 
-  RotateCcw, 
+  Target, 
+  RotateCcw,
   Play, 
   Pause,
-  Target,
   Star,
   Zap
 } from 'lucide-react'
@@ -367,7 +366,8 @@ export function TypingSpeedGame() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2 text-sm">
-              {t('games.typingGameInstructions', { returnObjects: true }).map((instruction: string, index: number) => (
+              {Array.isArray(t('games.typingGameInstructions', { returnObjects: true })) && 
+                  (t('games.typingGameInstructions', { returnObjects: true }) as string[]).map((instruction: string, index: number) => (
                 <p key={index}>{instruction}</p>
               ))}
             </div>

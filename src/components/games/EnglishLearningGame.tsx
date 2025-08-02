@@ -565,7 +565,8 @@ export function EnglishLearningGame() {
           <CardContent>
             <div className="space-y-4">
               <div className="space-y-2 text-sm">
-                {t('games.englishGameInstructions', { returnObjects: true }).map((instruction: string, index: number) => (
+                {Array.isArray(t('games.englishGameInstructions', { returnObjects: true })) && 
+                  (t('games.englishGameInstructions', { returnObjects: true }) as string[]).map((instruction: string, index: number) => (
                   <p key={index}>{instruction}</p>
                 ))}
               </div>

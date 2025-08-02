@@ -307,7 +307,8 @@ export function MemoryGame() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
-                {t('games.memoryGameInstructions', { returnObjects: true }).map((instruction: string, index: number) => (
+                {Array.isArray(t('games.memoryGameInstructions', { returnObjects: true })) && 
+                  (t('games.memoryGameInstructions', { returnObjects: true }) as string[]).map((instruction: string, index: number) => (
                   <p key={index}>{instruction}</p>
                 ))}
               </div>

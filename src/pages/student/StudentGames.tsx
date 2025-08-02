@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Gamepad2, Brain, Keyboard, Trophy, Clock, Target, BookOpen, Sparkles, Zap, Star } from 'lucide-react'
+import { Gamepad2, Brain, Keyboard, Trophy, Clock, Target, BookOpen, Sparkles, Star } from 'lucide-react'
 
 // Lazy load game components to prevent loading issues
 const MemoryGame = lazy(() => import('@/components/games/MemoryGame').then(module => ({ default: module.MemoryGame })))

@@ -1,19 +1,25 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay } from 'date-fns'
-import { enUS } from 'date-fns/locale/en-US'
+import { enUS } from 'date-fns/locale'
+import { 
+  Calendar as CalendarIcon, 
+  Plus,
+  Trash2
+} from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
-import { useCalendarStore, type CalendarEvent } from '@/store/calendarStore'
+import { useCalendarStore } from '@/store/calendarStore'
+import type { CalendarEvent } from '@/store/calendarStore'
+import type { View } from 'react-big-calendar'
 import { useGroupsStore } from '@/store/groupsStore'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, Trash2, Calendar as CalendarIcon } from 'lucide-react'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
 const locales = {
@@ -36,7 +42,7 @@ export default function TeacherCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
-  const [currentView, setCurrentView] = useState<'month' | 'week' | 'day'>('month')
+  const [currentView, setCurrentView] = useState<View>('month')
   
   const [formData, setFormData] = useState({
     title: '',
@@ -130,7 +136,7 @@ export default function TeacherCalendar() {
     setIsEditMode(false)
   }
 
-  const handleViewChange = (view: 'month' | 'week' | 'day') => {
+  const handleViewChange = (view: View) => {
     setCurrentView(view)
   }
 
@@ -164,7 +170,7 @@ export default function TeacherCalendar() {
                 <Input
                   id="title"
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   placeholder={t('teacher.eventTitle')}
                 />
               </div>
@@ -173,7 +179,7 @@ export default function TeacherCalendar() {
                 <Label htmlFor="type">{t('teacher.type')}</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={(value: any) => setFormData(prev => ({ ...prev, type: value }))}
+                  onValueChange={(value: 'homework' | 'lesson' | 'quiz' | 'exam') => setFormData(prev => ({ ...prev, type: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -211,7 +217,7 @@ export default function TeacherCalendar() {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder={t('teacher.eventDescription')}
                 />
               </div>
@@ -223,7 +229,7 @@ export default function TeacherCalendar() {
                     id="start"
                     type="datetime-local"
                     value={format(formData.start, "yyyy-MM-dd'T'HH:mm")}
-                    onChange={(e) => setFormData(prev => ({ 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ 
                       ...prev, 
                       start: new Date(e.target.value) 
                     }))}
@@ -235,7 +241,7 @@ export default function TeacherCalendar() {
                     id="end"
                     type="datetime-local"
                     value={format(formData.end, "yyyy-MM-dd'T'HH:mm")}
-                    onChange={(e) => setFormData(prev => ({ 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ 
                       ...prev, 
                       end: new Date(e.target.value) 
                     }))}

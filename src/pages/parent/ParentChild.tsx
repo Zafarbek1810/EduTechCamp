@@ -16,8 +16,6 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Star,
-  Target,
   Trophy,
   Mail,
   Phone

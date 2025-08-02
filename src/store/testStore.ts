@@ -14,6 +14,7 @@ export interface Test {
   createdAt: Date
   teacherId: string
   groupId?: string
+  isActive?: boolean
 }
 
 export interface TestResult {
@@ -56,6 +57,7 @@ const mockTests: Test[] = [
     explanation: 'This question tests understanding of Algebra Basics at easy level.',
     timeLimit: 5,
     totalPoints: 10,
+    isActive: true,
     createdAt: new Date('2024-01-15'),
     teacherId: '2',
     groupId: 'group1'
@@ -76,6 +78,7 @@ const mockTests: Test[] = [
     explanation: 'This question tests understanding of World War II at medium level.',
     timeLimit: 5,
     totalPoints: 10,
+    isActive: true,
     createdAt: new Date('2024-01-16'),
     teacherId: '2',
     groupId: 'group2'
@@ -136,10 +139,9 @@ export const useTestStore = create<TestStore>((set, get) => ({
     return tests.filter(test => test.teacherId === teacherId)
   },
 
-  getTestsForStudent: (studentId: string) => {
+  getTestsForStudent: () => {
     const { tests } = get()
-    // For now, return all tests. In a real app, you'd filter by student's group
-    return tests
+    return tests.filter(test => test.isActive)
   },
 
   getTestResults: (testId: string) => {
