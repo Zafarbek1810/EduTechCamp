@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { useGroupsStore, type Group } from '@/store/groupsStore'
 import { useStudentsStore } from '@/store/studentsStore'
@@ -10,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Users, Clock, Eye, Plus, Edit, Trash2, X, BookOpen, Calendar, User, UserPlus, Search, ChevronDown } from 'lucide-react'
 
 export default function TeacherGroups() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const { getGroupsByTeacher, addGroup, updateGroup, deleteGroup } = useGroupsStore()
   const { updateStudent, students } = useStudentsStore()
@@ -37,7 +39,7 @@ export default function TeacherGroups() {
   }
 
   const handleDeleteGroup = (groupId: string) => {
-    if (confirm('Are you sure you want to delete this group?')) {
+    if (confirm(t('teacher.confirmDeleteGroup'))) {
       deleteGroup(groupId)
     }
   }
@@ -154,12 +156,12 @@ export default function TeacherGroups() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">My Groups</h1>
-          <p className="text-muted-foreground">Manage your assigned groups and students</p>
+          <h1 className="text-3xl font-bold text-foreground">{t('teacher.myGroups')}</h1>
+          <p className="text-muted-foreground">{t('teacher.manageAssignedGroups')}</p>
         </div>
         <Button className="flex-0 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium" onClick={handleAddGroup}>
           <Plus className="w-4 h-4 mr-2" />
-          Add Group
+          {t('teacher.addGroup')}
         </Button>
       </div>
 
@@ -167,20 +169,20 @@ export default function TeacherGroups() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Groups</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.totalGroups')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{teacherGroups.length}</div>
             <p className="text-xs text-muted-foreground">
-              Active groups
+              {t('teacher.activeGroups')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.totalStudents')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -188,14 +190,14 @@ export default function TeacherGroups() {
               {teacherGroups.reduce((sum, group) => sum + group.studentCount, 0)}
             </div>
             <p className="text-xs text-muted-foreground">
-              Across all groups
+              {t('teacher.acrossAllGroups')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Subjects</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.subjects')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -203,7 +205,7 @@ export default function TeacherGroups() {
               {new Set(teacherGroups.map(g => g.subject)).size}
             </div>
             <p className="text-xs text-muted-foreground">
-              Different subjects
+              {t('teacher.differentSubjects')}
             </p>
           </CardContent>
         </Card>
@@ -212,21 +214,21 @@ export default function TeacherGroups() {
       {/* Groups Table */}
       <Card>
         <CardHeader>
-          <CardTitle>My Groups</CardTitle>
+          <CardTitle>{t('teacher.myGroups')}</CardTitle>
           <CardDescription>
-            Overview of all groups assigned to you
+            {t('teacher.overviewOfAssignedGroups')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Group Name</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Students</TableHead>
-                <TableHead>Lesson Days</TableHead>
-                <TableHead>Lesson Time</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t('teacher.groupName')}</TableHead>
+                <TableHead>{t('teacher.subject')}</TableHead>
+                <TableHead>{t('teacher.students')}</TableHead>
+                <TableHead>{t('teacher.lessonDays')}</TableHead>
+                <TableHead>{t('teacher.lessonTime')}</TableHead>
+                <TableHead>{t('teacher.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -239,7 +241,7 @@ export default function TeacherGroups() {
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Users className="w-4 h-4 text-gray-500" />
-                      <span>{group.studentCount} students</span>
+                      <span>{group.studentCount} {t('teacher.students')}</span>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -265,7 +267,7 @@ export default function TeacherGroups() {
                         onClick={() => handleViewStudents(group)}
                       >
                         <Eye className="w-4 h-4 mr-1" />
-                        View Students
+                        {t('teacher.viewStudents')}
                       </Button>
                       <Button
                         size="sm"
@@ -273,7 +275,7 @@ export default function TeacherGroups() {
                         onClick={() => handleAssignStudents(group)}
                       >
                         <UserPlus className="w-4 h-4 mr-1" />
-                        Add Student
+                        {t('teacher.addStudent')}
                       </Button>
                       <Button 
                         size="sm" 
@@ -318,10 +320,10 @@ export default function TeacherGroups() {
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold text-foreground">
-                        {editingGroup ? 'Edit Group' : 'Add New Group'}
+                        {editingGroup ? t('teacher.editGroup') : t('teacher.addNewGroup')}
                       </CardTitle>
                       <CardDescription className="text-muted-foreground">
-                        {editingGroup ? 'Update group information' : 'Create a new group'}
+                        {editingGroup ? t('teacher.updateGroupInfo') : t('teacher.createNewGroup')}
                       </CardDescription>
                     </div>
                   </div>
@@ -340,17 +342,17 @@ export default function TeacherGroups() {
                 <form onSubmit={handleGroupSubmit} className="space-y-6">
                   {/* Basic Information */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Basic Information</h3>
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('teacher.basicInformation')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                           <User className="w-4 h-4" />
-                          Group Name
+                          {t('teacher.groupName')}
                         </label>
                         <Input
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          placeholder="Enter group name"
+                          placeholder={t('teacher.enterGroupName')}
                           className="h-10"
                           required
                         />
@@ -358,12 +360,12 @@ export default function TeacherGroups() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                           <BookOpen className="w-4 h-4" />
-                          Subject
+                          {t('teacher.subject')}
                         </label>
                         <Input
                           value={formData.subject}
                           onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                          placeholder="Enter subject"
+                          placeholder={t('teacher.enterSubject')}
                           className="h-10"
                           required
                         />
@@ -373,12 +375,12 @@ export default function TeacherGroups() {
 
                   {/* Schedule */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Schedule</h3>
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('teacher.schedule')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                           <Clock className="w-4 h-4" />
-                          Lesson Time
+                          {t('teacher.lessonTime')}
                         </label>
                         <Input
                           type="time"
@@ -391,13 +393,13 @@ export default function TeacherGroups() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                           <Users className="w-4 h-4" />
-                          Student Count
+                          {t('teacher.studentCount')}
                         </label>
                         <Input
                           type="number"
                           value={formData.studentCount}
                           onChange={(e) => setFormData({ ...formData, studentCount: Number(e.target.value) })}
-                          placeholder="Enter student count"
+                          placeholder={t('teacher.enterStudentCount')}
                           className="h-10"
                           required
                         />
@@ -407,7 +409,7 @@ export default function TeacherGroups() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        Lesson Days
+                        {t('teacher.lessonDays')}
                       </label>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                         {daysOfWeek.map((day) => (
@@ -431,7 +433,7 @@ export default function TeacherGroups() {
                       type="submit" 
                       className="flex-1 h-11 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-medium"
                     >
-                      {editingGroup ? 'Update Group' : 'Add Group'}
+                      {editingGroup ? t('teacher.updateGroup') : t('teacher.addGroup')}
                     </Button>
                     <Button 
                       type="button" 
@@ -439,7 +441,7 @@ export default function TeacherGroups() {
                       onClick={handleCloseGroupModal}
                       className="h-11 px-6"
                     >
-                      Cancel
+                      {t('common.cancel')}
                     </Button>
                   </div>
                 </form>
@@ -469,10 +471,10 @@ export default function TeacherGroups() {
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold text-foreground">
-                        Add Student to {selectedGroup.name}
+                        {t('teacher.addStudentTo')} {selectedGroup.name}
                       </CardTitle>
                       <CardDescription className="text-muted-foreground">
-                        Select one student to add to this group
+                        {t('teacher.selectOneStudentToAdd')}
                       </CardDescription>
                     </div>
                   </div>
@@ -492,7 +494,7 @@ export default function TeacherGroups() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
-                    placeholder="Search students by name or email..."
+                    placeholder={t('teacher.searchStudentsByNameOrEmail')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 h-10"
@@ -503,11 +505,11 @@ export default function TeacherGroups() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                      Available Students ({getAvailableStudents().length})
+                      {t('teacher.availableStudents')} ({getAvailableStudents().length})
                     </h3>
                     {selectedStudent && (
                       <Badge variant="secondary">
-                        1 selected
+                        {t('teacher.oneSelected')}
                       </Badge>
                     )}
                   </div>
@@ -516,7 +518,7 @@ export default function TeacherGroups() {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                       <Users className="w-4 h-4" />
-                      Select Student
+                      {t('teacher.selectStudent')}
                     </label>
                     <div className="relative">
                       <select
@@ -524,10 +526,10 @@ export default function TeacherGroups() {
                         onChange={(e) => setSelectedStudent(e.target.value)}
                         className="w-full h-12 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                       >
-                        <option value="">Choose a student...</option>
+                        <option value="">{t('teacher.chooseAStudent')}</option>
                         {getAvailableStudents().map((student) => (
                           <option key={student.id} value={student.id} className="py-2">
-                            {student.fullName} - {student.email} {student.group ? `(Currently in: ${student.group})` : '(Unassigned)'}
+                            {student.fullName} - {student.email} {student.group ? `(${t('teacher.currentlyIn')}: ${student.group})` : `(${t('teacher.unassigned')})`}
                           </option>
                         ))}
                       </select>
@@ -536,14 +538,14 @@ export default function TeacherGroups() {
                       </div>
                     </div>
                     <p className="text-xs text-gray-500">
-                      Select one student to add to this group
+                      {t('teacher.selectOneStudentToAdd')}
                     </p>
                   </div>
                   
                   {/* Selected Student Preview */}
                   {selectedStudent && (
                     <div className="space-y-2">
-                      <h4 className="text-sm font-medium text-muted-foreground">Selected Student:</h4>
+                      <h4 className="text-sm font-medium text-muted-foreground">{t('teacher.selectedStudent')}:</h4>
                       <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
                         {(() => {
                           const student = students.find(s => s.id === selectedStudent)
@@ -571,7 +573,7 @@ export default function TeacherGroups() {
                   
                   {getAvailableStudents().length === 0 && (
                     <div className="text-center py-8 text-gray-500">
-                      No students available for assignment.
+                      {t('teacher.noStudentsAvailableForAssignment')}
                     </div>
                   )}
                 </div>
@@ -583,14 +585,14 @@ export default function TeacherGroups() {
                     className="flex-1 h-11 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-medium"
                     disabled={!selectedStudent}
                   >
-                    Add Student to Group
+                    {t('teacher.addStudentToGroup')}
                   </Button>
                   <Button 
                     variant="outline" 
                     onClick={handleCloseAssignModal}
                     className="h-11 px-6"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                 </div>
               </CardContent>
@@ -619,10 +621,10 @@ export default function TeacherGroups() {
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold text-foreground">
-                        Students in {selectedGroup.name}
+                        {t('teacher.studentsIn')} {selectedGroup.name}
                       </CardTitle>
                       <CardDescription className="text-muted-foreground">
-                        View all students assigned to this group
+                        {t('teacher.viewAllStudentsAssignedToGroup')}
                       </CardDescription>
                     </div>
                   </div>
@@ -648,11 +650,11 @@ export default function TeacherGroups() {
                       <CardContent>
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">Phone:</span>
+                            <span className="text-sm text-gray-500">{t('teacher.phone')}:</span>
                             <span className="text-sm">{student.phoneNumber}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">Group:</span>
+                            <span className="text-sm text-gray-500">{t('teacher.group')}:</span>
                             <Badge variant="secondary">{selectedGroup.name}</Badge>
                           </div>
                         </div>
@@ -663,7 +665,7 @@ export default function TeacherGroups() {
                 
                 {getStudentsInGroup(selectedGroup.id).length === 0 && (
                   <div className="text-center py-8 text-gray-500">
-                    No students assigned to this group yet.
+                    {t('teacher.noStudentsAssignedToGroupYet')}
                   </div>
                 )}
               </CardContent>

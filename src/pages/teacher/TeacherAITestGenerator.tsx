@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -36,6 +37,7 @@ interface GeneratedTest {
 }
 
 export default function TeacherAITestGenerator() {
+  const { t } = useTranslation()
   console.log('TeacherAITestGenerator component rendering...')
   
   const [selectedTopic, setSelectedTopic] = useState<string>('')
@@ -77,7 +79,7 @@ export default function TeacherAITestGenerator() {
     // AI Test Generation - Single Question with 4 Options
     const generateTestWithAI = async () => {
       if (!selectedTopic.trim()) {
-        setError('Please enter a topic')
+        setError(t('aiTestGenerator.pleaseEnterTopic'))
         return
       }
 
@@ -91,7 +93,7 @@ export default function TeacherAITestGenerator() {
         
       } catch (error) {
         console.error('Test generation failed:', error)
-        setError('Failed to generate test. Please try again.')
+        setError(t('aiTestGenerator.failedToGenerate'))
       } finally {
         setIsGenerating(false)
       }
@@ -236,10 +238,10 @@ Explanation: ${generatedTest.explanation}
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
               <Bot className="h-8 w-8 text-purple-500" />
-              AI Test Generator
+              {t('aiTestGenerator.title')}
             </h1>
             <p className="text-muted-foreground">
-              Generate single-question tests with AI for students
+              {t('aiTestGenerator.subtitle')}
             </p>
           </div>
           
@@ -248,10 +250,10 @@ Explanation: ${generatedTest.explanation}
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="h-5 w-5 text-purple-500" />
-                <span className="text-sm font-medium">AI Powered</span>
+                <span className="text-sm font-medium">{t('aiTestGenerator.aiPowered')}</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Creates 1 question with 4 multiple-choice options
+                {t('aiTestGenerator.createsSingleQuestion')}
               </p>
             </CardContent>
           </Card>
@@ -259,8 +261,8 @@ Explanation: ${generatedTest.explanation}
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'generate' | 'results')}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="generate">Generate Test</TabsTrigger>
-            <TabsTrigger value="results">Test Results</TabsTrigger>
+            <TabsTrigger value="generate">{t('aiTestGenerator.generateTest')}</TabsTrigger>
+            <TabsTrigger value="results">{t('aiTestGenerator.testResults')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="generate" className="space-y-6">
@@ -270,15 +272,15 @@ Explanation: ${generatedTest.explanation}
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Target className="h-5 w-5 text-blue-500" />
-                    Test Configuration
+                    {t('aiTestGenerator.testConfiguration')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Topic Selection */}
                   <div className="space-y-4">
-                    <Label>Topic or Lesson</Label>
+                    <Label>{t('aiTestGenerator.topicOrLesson')}</Label>
                     <Input
-                      placeholder="Enter a topic (e.g., Algebra Basics, World War II, Photosynthesis)"
+                      placeholder={t('aiTestGenerator.enterTopic')}
                       value={selectedTopic}
                       onChange={(e) => setSelectedTopic(e.target.value)}
                     />
@@ -293,29 +295,29 @@ Explanation: ${generatedTest.explanation}
                   {/* Test Settings */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="difficulty">Difficulty</Label>
+                      <Label htmlFor="difficulty">{t('aiTestGenerator.difficulty')}</Label>
                       <Select value={difficulty} onValueChange={(value) => setDifficulty(value as 'easy' | 'medium' | 'hard')}>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full h-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="easy">Easy</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="hard">Hard</SelectItem>
+                        <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg">
+                          <SelectItem value="easy" className="hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700">{t('aiTestGenerator.easy')}</SelectItem>
+                          <SelectItem value="medium" className="hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700">{t('aiTestGenerator.medium')}</SelectItem>
+                          <SelectItem value="hard" className="hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700">{t('aiTestGenerator.hard')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     
                     <div>
-                      <Label htmlFor="targetGroup">Target Group (Optional)</Label>
+                      <Label htmlFor="targetGroup">{t('aiTestGenerator.targetGroup')}</Label>
                       <Select value={targetGroup} onValueChange={setTargetGroup}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a group" />
+                        <SelectTrigger className="w-full h-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm">
+                          <SelectValue placeholder={t('aiTestGenerator.selectGroup')} />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Groups</SelectItem>
+                        <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg">
+                          <SelectItem value="all" className="hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700">{t('aiTestGenerator.allGroups')}</SelectItem>
                           {teacherGroups.map((group) => (
-                            <SelectItem key={group.id} value={group.id}>
+                            <SelectItem key={group.id} value={group.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 focus:bg-gray-50 dark:focus:bg-gray-700">
                               {group.name}
                             </SelectItem>
                           ))}
@@ -332,12 +334,12 @@ Explanation: ${generatedTest.explanation}
                     {isGenerating ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        AI is generating your test...
+                        {t('aiTestGenerator.aiIsGenerating')}
                       </>
                     ) : (
                       <>
                         <Sparkles className="h-4 w-4" />
-                        Generate Test with AI
+                        {t('aiTestGenerator.generateTestWithAI')}
                       </>
                     )}
                   </Button>
@@ -349,7 +351,7 @@ Explanation: ${generatedTest.explanation}
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5 text-green-500" />
-                    Generated Test
+                    {t('aiTestGenerator.generatedTest')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -374,10 +376,10 @@ Explanation: ${generatedTest.explanation}
 
                       {/* Question */}
                       <div className="border rounded-lg p-4">
-                        <h4 className="font-semibold mb-3">Question:</h4>
+                        <h4 className="font-semibold mb-3">{t('aiTestGenerator.question')}:</h4>
                         <p className="text-sm mb-4">{generatedTest.question}</p>
                         
-                        <h5 className="font-medium mb-2">Options:</h5>
+                        <h5 className="font-medium mb-2">{t('aiTestGenerator.options')}:</h5>
                         <div className="space-y-2">
                           {generatedTest.options.map((option, index) => (
                             <div key={index} className="flex items-center gap-2">
@@ -390,12 +392,12 @@ Explanation: ${generatedTest.explanation}
                         </div>
                         
                         <div className="mt-4 p-3 bg-green-50 rounded-lg">
-                          <h6 className="font-medium text-green-800 mb-1">Correct Answer:</h6>
+                          <h6 className="font-medium text-green-800 mb-1">{t('aiTestGenerator.correctAnswer')}:</h6>
                           <p className="text-sm text-green-700">{generatedTest.correctAnswer}</p>
                         </div>
                         
                         <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                          <h6 className="font-medium text-blue-800 mb-1">Explanation:</h6>
+                          <h6 className="font-medium text-blue-800 mb-1">{t('aiTestGenerator.explanation')}:</h6>
                           <p className="text-sm text-blue-700">{generatedTest.explanation}</p>
                         </div>
                       </div>
@@ -404,18 +406,18 @@ Explanation: ${generatedTest.explanation}
                       <div className="flex gap-2">
                         <Button onClick={saveTest} className="flex items-center gap-2">
                           <Users className="h-4 w-4" />
-                          Save & Assign to Students
+                          {t('aiTestGenerator.saveAndAssign')}
                         </Button>
                         <Button onClick={downloadTest} variant="outline" className="flex items-center gap-2">
                           <Download className="h-4 w-4" />
-                          Download
+                          {t('aiTestGenerator.download')}
                         </Button>
                       </div>
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
                       <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>Enter a topic and click "Generate Test with AI" to create a single-question assessment.</p>
+                      <p>{t('aiTestGenerator.enterTopicAndClick')}</p>
                     </div>
                   )}
                 </CardContent>
@@ -428,14 +430,14 @@ Explanation: ${generatedTest.explanation}
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-purple-500" />
-                  Test Results & Student Performance
+                  {t('aiTestGenerator.testResultsAndPerformance')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {teacherTests.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No tests have been created yet. Generate a test to see student results.</p>
+                    <p>{t('aiTestGenerator.noTestsCreatedYet')}</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -447,7 +449,7 @@ Explanation: ${generatedTest.explanation}
                         </div>
                         <p className="text-sm text-muted-foreground mb-3">{test.topic}</p>
                         
-                        <p className="text-sm text-muted-foreground">No students have taken this test yet.</p>
+                        <p className="text-sm text-muted-foreground">{t('aiTestGenerator.noStudentsTaken')}</p>
                       </div>
                     ))}
                   </div>

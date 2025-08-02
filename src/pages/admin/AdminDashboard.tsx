@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import {
   Card,
   CardContent,
@@ -32,9 +33,9 @@ const monthlyRevenue = [
 ];
 
 const userStats = [
-  { name: "Students", value: 45, color: "#3B82F6" },
-  { name: "Teachers", value: 8, color: "#10B981" },
-  { name: "Admins", value: 2, color: "#F59E0B" },
+  { name: "students", value: 45, color: "#3B82F6" },
+  { name: "teachers", value: 8, color: "#10B981" },
+  { name: "admins", value: 2, color: "#F59E0B" },
 ];
 
 const teacherPerformance = [
@@ -45,6 +46,7 @@ const teacherPerformance = [
 ];
 
 export default function AdminDashboard() {
+  const { t } = useTranslation()
   console.log('AdminDashboard - rendering')
   
   return (
@@ -54,14 +56,14 @@ export default function AdminDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Students
+                {t('dashboard.totalStudents')}
               </CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">45</div>
               <p className="text-xs text-muted-foreground">
-                +2 from last month
+                {t('dashboard.fromLastMonth', { percent: '+2' })}
               </p>
             </CardContent>
           </Card>
@@ -69,14 +71,14 @@ export default function AdminDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Teachers
+                {t('dashboard.totalTeachers')}
               </CardTitle>
               <GraduationCap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">8</div>
               <p className="text-xs text-muted-foreground">
-                +1 from last month
+                {t('dashboard.fromLastMonth', { percent: '+1' })}
               </p>
             </CardContent>
           </Card>
@@ -84,27 +86,27 @@ export default function AdminDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Monthly Revenue
+                {t('dashboard.monthlyRevenue')}
               </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">$25,000</div>
               <p className="text-xs text-muted-foreground">
-                +12% from last month
+                {t('dashboard.fromLastMonth', { percent: '+12%' })}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Growth Rate</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.growthRate')}</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">+15%</div>
               <p className="text-xs text-muted-foreground">
-                +2% from last month
+                {t('dashboard.fromLastMonth', { percent: '+2%' })}
               </p>
             </CardContent>
           </Card>
@@ -115,9 +117,9 @@ export default function AdminDashboard() {
           {/* Revenue Chart */}
           <Card>
             <CardHeader>
-              <CardTitle>Monthly Revenue</CardTitle>
+              <CardTitle>{t('dashboard.monthlyRevenue')}</CardTitle>
               <CardDescription>
-                Revenue trend over the last 6 months
+                {t('dashboard.revenueTrend')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -141,8 +143,8 @@ export default function AdminDashboard() {
           {/* User Distribution */}
           <Card>
             <CardHeader>
-              <CardTitle>User Distribution</CardTitle>
-              <CardDescription>Breakdown of users by role</CardDescription>
+              <CardTitle>{t('dashboard.userDistribution')}</CardTitle>
+              <CardDescription>{t('dashboard.userBreakdown')}</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -153,7 +155,7 @@ export default function AdminDashboard() {
                     cy="50%"
                     labelLine={false}
                     label={({ name, percent }) =>
-                      `${name} ${((percent || 0) * 100).toFixed(0)}%`
+                      `${t(`dashboard.${name}`)} ${((percent || 0) * 100).toFixed(0)}%`
                     }
                     outerRadius={80}
                     fill="#8884d8"
@@ -173,9 +175,9 @@ export default function AdminDashboard() {
         {/* Teacher Performance */}
         <Card>
           <CardHeader>
-            <CardTitle>Teacher Performance & Salary</CardTitle>
+            <CardTitle>{t('dashboard.teacherPerformance')}</CardTitle>
             <CardDescription>
-              Teacher performance based on student count and calculated salary
+              {t('dashboard.teacherPerformanceDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -190,13 +192,13 @@ export default function AdminDashboard() {
                   yAxisId="left"
                   dataKey="students"
                   fill="#3B82F6"
-                  name="Students"
+                  name={t('dashboard.students')}
                 />
                 <Bar
                   yAxisId="right"
                   dataKey="salary"
                   fill="#10B981"
-                  name="Salary ($)"
+                  name={t('dashboard.salary')}
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -206,8 +208,8 @@ export default function AdminDashboard() {
         {/* Recent Activity */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest activities in the system</CardDescription>
+            <CardTitle>{t('dashboard.recentActivity')}</CardTitle>
+            <CardDescription>{t('dashboard.latestActivities')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -215,40 +217,40 @@ export default function AdminDashboard() {
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">
-                    New student registration
+                    {t('dashboard.newStudentRegistration')}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Alice Johnson registered for Math class
+                    {t('dashboard.aliceJohnsonRegistered')}
                   </p>
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  2 hours ago
+                  {t('dashboard.twoHoursAgo')}
                 </span>
               </div>
 
               <div className="flex items-center space-x-4">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Payment received</p>
+                  <p className="text-sm font-medium">{t('dashboard.paymentReceived')}</p>
                   <p className="text-xs text-muted-foreground">
-                    Monthly fee payment from Bob Smith
+                    {t('dashboard.monthlyFeePayment')}
                   </p>
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  4 hours ago
+                  {t('dashboard.fourHoursAgo')}
                 </span>
               </div>
 
               <div className="flex items-center space-x-4">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium">New product added</p>
+                  <p className="text-sm font-medium">{t('dashboard.newProductAdded')}</p>
                   <p className="text-xs text-muted-foreground">
-                    Premium notebook added to shop
+                    {t('dashboard.premiumNotebookAdded')}
                   </p>
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  6 hours ago
+                  {t('dashboard.sixHoursAgo')}
                 </span>
               </div>
             </div>

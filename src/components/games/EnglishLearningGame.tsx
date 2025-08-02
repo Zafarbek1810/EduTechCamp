@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -205,6 +206,7 @@ const sentenceQuestions: Question[] = [
 const allQuestions = [...vocabularyQuestions, ...grammarQuestions, ...sentenceQuestions]
 
 export function EnglishLearningGame() {
+  const { t } = useTranslation()
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [isAnswered, setIsAnswered] = useState(false)
@@ -324,10 +326,10 @@ export function EnglishLearningGame() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <BookOpen className="h-6 w-6 text-purple-500" />
-            <h3 className="text-xl font-bold">English Learning Game</h3>
+            <h3 className="text-xl font-bold">{t('games.englishLearningGame')}</h3>
           </div>
           <Badge variant={isGameActive ? "default" : "secondary"}>
-            {isGameActive ? "Playing" : "Ready"}
+            {isGameActive ? t('games.playing') : t('games.ready')}
           </Badge>
         </div>
         
@@ -342,7 +344,7 @@ export function EnglishLearningGame() {
           </div>
           <div className="flex items-center gap-2">
             <Trophy className="h-4 w-4 text-yellow-500" />
-            <span>{score} pts</span>
+            <span>{score} {t('games.points')}</span>
           </div>
         </div>
       </div>
@@ -350,7 +352,7 @@ export function EnglishLearningGame() {
       {/* Progress Bar */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span>Progress</span>
+          <span>{t('games.progress')}</span>
           <span>{Math.round(progress)}%</span>
         </div>
         <Progress value={progress} className="h-2" />
@@ -365,23 +367,23 @@ export function EnglishLearningGame() {
               onChange={(e) => setGameMode(e.target.value as any)}
               className="px-3 py-2 border rounded-md"
             >
-              <option value="mixed">Mixed</option>
-              <option value="vocabulary">Vocabulary</option>
-              <option value="grammar">Grammar</option>
-              <option value="sentence">Sentence Building</option>
+              <option value="mixed">{t('games.mixed')}</option>
+              <option value="vocabulary">{t('games.vocabulary')}</option>
+              <option value="grammar">{t('games.grammar')}</option>
+              <option value="sentence">{t('games.sentenceBuilding')}</option>
             </select>
             <select 
               value={difficulty} 
               onChange={(e) => setDifficulty(e.target.value as any)}
               className="px-3 py-2 border rounded-md"
             >
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
+              <option value="easy">{t('games.easy')}</option>
+              <option value="medium">{t('games.medium')}</option>
+              <option value="hard">{t('games.hard')}</option>
             </select>
             <Button onClick={initializeGame} className="flex items-center gap-2">
               <Play className="h-4 w-4" />
-              Start Game
+              {t('games.startGame')}
             </Button>
           </div>
         ) : (
@@ -392,7 +394,7 @@ export function EnglishLearningGame() {
               className="flex items-center gap-2"
             >
               {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-              {isPaused ? "Resume" : "Pause"}
+              {isPaused ? t('games.resume') : t('games.pause')}
             </Button>
             <Button 
               onClick={initializeGame} 
@@ -400,7 +402,7 @@ export function EnglishLearningGame() {
               className="flex items-center gap-2"
             >
               <RotateCcw className="h-4 w-4" />
-              Restart
+              {t('games.restart')}
             </Button>
           </>
         )}
@@ -465,7 +467,7 @@ export function EnglishLearningGame() {
                     <div className="flex items-start gap-2">
                       <Lightbulb className="h-5 w-5 text-blue-600 mt-0.5" />
                       <div>
-                        <h4 className="font-semibold text-blue-800 mb-2">Explanation:</h4>
+                        <h4 className="font-semibold text-blue-800 mb-2">{t('games.explanation')}</h4>
                         <p className="text-blue-700">{currentQuestion.explanation}</p>
                       </div>
                     </div>
@@ -483,18 +485,18 @@ export function EnglishLearningGame() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-green-700">
               <Star className="h-6 w-6" />
-              Excellent Work!
+              {t('games.excellentWork')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p className="text-sm text-muted-foreground">Score</p>
+                  <p className="text-sm text-muted-foreground">{t('games.score')}</p>
                   <p className="text-2xl font-bold text-green-600">{score}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Accuracy</p>
+                  <p className="text-sm text-muted-foreground">{t('games.accuracy')}</p>
                   <p className="text-2xl font-bold text-blue-600">
                     {questions.length > 0 ? Math.round((correctAnswers / questions.length) * 100) : 0}%
                   </p>
@@ -502,18 +504,18 @@ export function EnglishLearningGame() {
               </div>
               <div className="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p className="text-sm text-muted-foreground">Correct Answers</p>
+                  <p className="text-sm text-muted-foreground">{t('games.correct')} {t('games.answers')}</p>
                   <p className="text-2xl font-bold text-purple-600">{correctAnswers}/{questions.length}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">High Score</p>
+                  <p className="text-sm text-muted-foreground">{t('games.highScore')}</p>
                   <p className="text-2xl font-bold text-yellow-600">{highScore}</p>
                 </div>
               </div>
               <div className="text-center">
                 <Button onClick={initializeGame} className="flex items-center gap-2 mx-auto">
                   <RotateCcw className="h-4 w-4" />
-                  Play Again
+                  {t('games.playAgain')}
                 </Button>
               </div>
             </div>
@@ -527,27 +529,27 @@ export function EnglishLearningGame() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-700">
               <Clock className="h-6 w-6" />
-              Time's Up!
+              {t('games.timesUp')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center space-y-4">
               <p className="text-muted-foreground">
-                You ran out of time! Try again to improve your English skills.
+                {t('games.youRanOutOfTimeEnglish')}
               </p>
               <div className="flex items-center justify-center gap-4">
                 <div className="text-center">
-                  <p className="text-sm text-muted-foreground">Score</p>
+                  <p className="text-sm text-muted-foreground">{t('games.score')}</p>
                   <p className="text-xl font-bold">{score}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm text-muted-foreground">Correct</p>
+                  <p className="text-sm text-muted-foreground">{t('games.correct')}</p>
                   <p className="text-xl font-bold">{correctAnswers}</p>
                 </div>
               </div>
               <Button onClick={initializeGame} className="flex items-center gap-2 mx-auto">
                 <RotateCcw className="h-4 w-4" />
-                Try Again
+                {t('games.tryAgain')}
               </Button>
             </div>
           </CardContent>
@@ -558,32 +560,30 @@ export function EnglishLearningGame() {
       {!isGameActive && questions.length === 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>How to Play</CardTitle>
+            <CardTitle>{t('games.howToPlay')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="space-y-2 text-sm">
-                <p>• Choose your game mode: Vocabulary, Grammar, Sentence Building, or Mixed</p>
-                <p>• Select difficulty level: Easy, Medium, or Hard</p>
-                <p>• Answer questions within the 5-minute time limit</p>
-                <p>• Read explanations to learn from your mistakes</p>
-                <p>• Track your progress and try to beat your high score</p>
+                {t('games.englishGameInstructions', { returnObjects: true }).map((instruction: string, index: number) => (
+                  <p key={index}>{instruction}</p>
+                ))}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
                 <div className="text-center p-3 bg-blue-50 rounded-lg">
                   <Brain className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-                  <h4 className="font-semibold">Vocabulary</h4>
-                  <p className="text-xs text-muted-foreground">Learn new words and meanings</p>
+                  <h4 className="font-semibold">{t('games.vocabulary')}</h4>
+                  <p className="text-xs text-muted-foreground">{t('games.learnNewWords')}</p>
                 </div>
                 <div className="text-center p-3 bg-green-50 rounded-lg">
                   <BookOpen className="h-6 w-6 text-green-500 mx-auto mb-2" />
-                  <h4 className="font-semibold">Grammar</h4>
-                  <p className="text-xs text-muted-foreground">Practice grammar rules</p>
+                  <h4 className="font-semibold">{t('games.grammar')}</h4>
+                  <p className="text-xs text-muted-foreground">{t('games.practiceGrammarRules')}</p>
                 </div>
                 <div className="text-center p-3 bg-purple-50 rounded-lg">
                   <Target className="h-6 w-6 text-purple-500 mx-auto mb-2" />
-                  <h4 className="font-semibold">Sentence Building</h4>
-                  <p className="text-xs text-muted-foreground">Construct proper sentences</p>
+                  <h4 className="font-semibold">{t('games.sentenceBuilding')}</h4>
+                  <p className="text-xs text-muted-foreground">{t('games.constructProperSentences')}</p>
                 </div>
               </div>
             </div>

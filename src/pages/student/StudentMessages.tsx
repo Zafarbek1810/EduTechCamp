@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { useChatStore, type ChatGroup } from '@/store/chatStore'
 import { Button } from '@/components/ui/button'
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 export default function StudentMessages() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const { messages, addMessage, getMessagesByGroup, getMessagesByParticipants, getGroupsByUser, markGroupAsRead, setTyping, getTypingUsers, deleteMessage, editMessage, getMessagesForStudent } = useChatStore()
   const [selectedGroup, setSelectedGroup] = useState<ChatGroup | null>(null)
@@ -154,7 +156,7 @@ export default function StudentMessages() {
             <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
             <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
           </div>
-          <span>{typingUserNames.join(', ')} is typing...</span>
+          <span>{typingUserNames.join(', ')} {t('student.isTyping')}</span>
         </div>
       )
     }
@@ -191,32 +193,41 @@ export default function StudentMessages() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Messages</h1>
-          <p className="text-muted-foreground">Communicate with your teachers and groups</p>
+      <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-xl border border-purple-200 dark:border-purple-800 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-white text-lg">💬</span>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-purple-900 dark:text-purple-100">{t('student.messages')}</h1>
+              <p className="text-purple-700 dark:text-purple-300">{t('student.communicateWithTeachersGroups')}</p>
+            </div>
+          </div>
+          <Button 
+            onClick={() => setIsNewChat(true)}
+            className="flex-0 h-11 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            {t('student.newChat')}
+          </Button>
         </div>
-        <Button 
-          onClick={() => setIsNewChat(true)}
-          className="flex-0 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New Chat
-        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <Card>
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-700">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="w-5 h-5" />
-                <span>Conversations</span>
-              </CardTitle>
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+                  <Users className="w-5 h-5 text-white" />
+                </div>
+                <CardTitle className="text-blue-900 dark:text-blue-100">{t('student.conversations')}</CardTitle>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {userGroups.map((group) => (
                   <div
                     key={group.id}
@@ -224,10 +235,10 @@ export default function StudentMessages() {
                       setSelectedGroup(group)
                       setSelectedTeacher(null)
                     }}
-                    className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                    className={`p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md ${
                       selectedGroup?.id === group.id
-                        ? 'bg-blue-50 border border-blue-200'
-                        : 'hover:bg-gray-50'
+                        ? 'bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-800 dark:to-indigo-800 border border-blue-300 dark:border-blue-600 shadow-lg'
+                        : 'hover:bg-white dark:hover:bg-gray-800 hover:shadow-sm'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -246,7 +257,7 @@ export default function StudentMessages() {
                                 {group.lastMessage.content.length > 30 && '...'}
                               </>
                             ) : (
-                              'No messages yet'
+                              t('student.noMessagesYet')
                             )}
                           </p>
                         </div>
@@ -266,25 +277,27 @@ export default function StudentMessages() {
 
         {/* Chat Area */}
         <div className="lg:col-span-3">
-          <Card className="h-[600px] flex flex-col">
+          <Card className="h-[600px] flex flex-col bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-700">
             {selectedGroup || selectedTeacher ? (
               <>
                 {/* Chat Header */}
-                <CardHeader className="border-b">
+                <CardHeader className="border-b border-green-200 dark:border-green-700 bg-white dark:bg-gray-800">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarFallback>
-                          {selectedGroup?.type === 'individual' ? <User className="w-5 h-5" /> : <Users className="w-5 h-5" />}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
+                        <Avatar className="w-8 h-8">
+                          <AvatarFallback className="bg-transparent">
+                            {selectedGroup?.type === 'individual' ? <User className="w-4 h-4 text-white" /> : <Users className="w-4 h-4 text-white" />}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
                       <div>
-                        <h3 className="font-semibold">
+                        <h3 className="font-bold text-green-900 dark:text-green-100">
                           {selectedGroup ? getGroupName(selectedGroup) : 
                            demoTeachers.find(t => t.id === selectedTeacher)?.name}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {selectedGroup?.type === 'group' ? 'Group Chat' : 'Individual Chat'}
+                        <p className="text-sm text-green-700 dark:text-green-300 font-medium">
+                          {selectedGroup?.type === 'group' ? t('student.groupChat') : t('student.individualChat')}
                         </p>
                       </div>
                     </div>
@@ -300,10 +313,10 @@ export default function StudentMessages() {
                         className={`flex ${message.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                          className={`max-w-xs lg:max-w-md px-4 py-3 rounded-xl shadow-sm ${
                             message.senderId === user?.id
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-gray-100 dark:bg-gray-800'
+                              ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+                              : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
                           }`}
                         >
                           <div className="flex items-center justify-between mb-1">
@@ -326,10 +339,10 @@ export default function StudentMessages() {
                               />
                               <div className="flex space-x-2">
                                 <Button size="sm" onClick={handleSaveEdit}>
-                                  Save
+                                  {t('student.save')}
                                 </Button>
                                 <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                  Cancel
+                                  {t('student.cancel')}
                                 </Button>
                               </div>
                             </div>
@@ -367,16 +380,20 @@ export default function StudentMessages() {
                 </CardContent>
 
                 {/* Message Input */}
-                <div className="p-4 border-t">
-                  <div className="flex space-x-2">
+                <div className="p-4 border-t border-green-200 dark:border-green-700 bg-white dark:bg-gray-800">
+                  <div className="flex space-x-3">
                     <Input
                       value={newMessage}
                       onChange={handleTyping}
                       onKeyPress={handleKeyPress}
-                      placeholder="Type your message..."
-                      className="flex-1"
+                      placeholder={t('student.typeYourMessage')}
+                      className="flex-1 border-green-300 dark:border-green-600 focus:border-green-500 dark:focus:border-green-400"
                     />
-                    <Button onClick={handleSendMessage} disabled={!newMessage.trim()}>
+                    <Button 
+                      onClick={handleSendMessage} 
+                      disabled={!newMessage.trim()}
+                      className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                    >
                       <Send className="w-4 h-4" />
                     </Button>
                   </div>
@@ -384,9 +401,11 @@ export default function StudentMessages() {
               </>
             ) : (
               <CardContent className="flex-1 flex items-center justify-center">
-                <div className="text-center text-gray-500 dark:text-gray-400">
-                  <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>Select a conversation to start messaging</p>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <Users className="w-8 h-8 text-white" />
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 font-medium">{t('student.selectConversationToStartMessaging')}</p>
                 </div>
               </CardContent>
             )}
@@ -398,24 +417,31 @@ export default function StudentMessages() {
       {isNewChat && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsNewChat(false)} />
-          <Card className="relative w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl">
+          <Card className="relative w-full max-w-md bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700 shadow-2xl">
             <CardHeader>
-              <CardTitle>Start New Chat</CardTitle>
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center shadow-md">
+                  <span className="text-white text-lg">💬</span>
+                </div>
+                <CardTitle className="text-purple-900 dark:text-purple-100">{t('student.startNewChat')}</CardTitle>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {demoTeachers.map((teacher) => (
                   <div
                     key={teacher.id}
                     onClick={() => startNewChat(teacher.id)}
-                    className="p-3 rounded-lg border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    className="p-4 rounded-xl border border-purple-200 dark:border-purple-700 cursor-pointer hover:bg-white dark:hover:bg-gray-800 hover:shadow-md transition-all duration-200 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10"
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">{teacher.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{teacher.group}</p>
+                        <p className="font-bold text-purple-900 dark:text-purple-100">{teacher.name}</p>
+                        <p className="text-sm text-purple-700 dark:text-purple-300">{teacher.group}</p>
                       </div>
-                      <User className="w-4 h-4 text-gray-400" />
+                      <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
                     </div>
                   </div>
                 ))}

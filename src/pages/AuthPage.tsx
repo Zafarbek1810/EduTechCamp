@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,6 +8,7 @@ import { useAuthStore } from '@/store/authStore'
 import { Eye, EyeOff, Lock, User, GraduationCap, Users, ShoppingCart, Heart } from 'lucide-react'
 
 export default function AuthPage() {
+  const { t } = useTranslation()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -35,11 +37,11 @@ export default function AuthPage() {
           navigate(`/${user.role}/dashboard`)
         }
       } else {
-        setError('Invalid username or password')
+        setError(t('auth.invalidCredentials'))
       }
     } catch (err) {
       console.error('Login error:', err)
-      setError('An error occurred during login')
+      setError(t('auth.loginError'))
     } finally {
       setIsLoading(false)
     }
@@ -47,35 +49,35 @@ export default function AuthPage() {
 
   const demoAccounts = [
     {
-      role: 'Admin',
+      role: t('common.admin'),
       username: 'admin',
       password: 'password',
       icon: Users,
-      description: 'Full system access',
+      description: t('auth.adminDescription'),
       color: 'bg-blue-500'
     },
     {
-      role: 'Teacher',
+      role: t('common.teacher'),
       username: 'teacher1',
       password: 'password',
       icon: GraduationCap,
-      description: 'Manage classes & students',
+      description: t('auth.teacherDescription'),
       color: 'bg-green-500'
     },
     {
-      role: 'Student',
+      role: t('common.student'),
       username: 'student1',
       password: 'password',
       icon: ShoppingCart,
-      description: 'Access courses & shop',
+      description: t('auth.studentDescription'),
       color: 'bg-purple-500'
     },
     {
-      role: 'Parent',
+      role: t('common.parent'),
       username: 'parent1',
       password: 'password',
       icon: Heart,
-      description: 'Monitor child progress',
+      description: t('auth.parentDescription'),
       color: 'bg-orange-500'
     }
   ]
@@ -97,12 +99,11 @@ export default function AuthPage() {
             
             <div className="space-y-4">
               <h2 className="text-4xl font-bold text-gray-900 leading-tight">
-                Welcome to the future of
-                <span className="block text-blue-600">education management</span>
+                {t('auth.welcomeToFuture')}
+                <span className="block text-blue-600">{t('auth.educationManagement')}</span>
               </h2>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Streamline your educational institution with our comprehensive CRM system. 
-                Manage students, teachers, and administrative tasks all in one place.
+                {t('auth.streamlineDescription')}
               </p>
             </div>
           </div>
@@ -114,8 +115,8 @@ export default function AuthPage() {
                 <Users className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Student Management</h3>
-                <p className="text-sm text-gray-600">Track progress and manage enrollments</p>
+                <h3 className="font-semibold text-gray-900">{t('auth.studentManagement')}</h3>
+                <p className="text-sm text-gray-600">{t('auth.studentManagementDesc')}</p>
               </div>
             </div>
             
@@ -124,8 +125,8 @@ export default function AuthPage() {
                 <GraduationCap className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Teacher Dashboard</h3>
-                <p className="text-sm text-gray-600">Monitor classes and attendance</p>
+                <h3 className="font-semibold text-gray-900">{t('auth.teacherDashboard')}</h3>
+                <p className="text-sm text-gray-600">{t('auth.teacherDashboardDesc')}</p>
               </div>
             </div>
             
@@ -134,8 +135,8 @@ export default function AuthPage() {
                 <ShoppingCart className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Student Shop</h3>
-                <p className="text-sm text-gray-600">Purchase courses and materials</p>
+                <h3 className="font-semibold text-gray-900">{t('auth.studentShop')}</h3>
+                <p className="text-sm text-gray-600">{t('auth.studentShopDesc')}</p>
               </div>
             </div>
           </div>
@@ -149,9 +150,9 @@ export default function AuthPage() {
                 <Lock className="w-8 h-8 text-white" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-bold text-gray-900">Welcome back</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900">{t('auth.welcomeBack')}</CardTitle>
                 <CardDescription className="text-gray-600 mt-2">
-                  Sign in to your EduCRM account
+                  {t('auth.signInToAccount')}
                 </CardDescription>
               </div>
             </CardHeader>
@@ -160,7 +161,7 @@ export default function AuthPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="username" className="text-sm font-medium text-foreground dark:text-white">
-                    Username
+                    {t('auth.username')}
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -169,7 +170,7 @@ export default function AuthPage() {
                       type="text"
                       value={username}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-                      placeholder="Enter your username"
+                      placeholder={t('auth.enterUsername')}
                       className="pl-10 h-11"
                       required
                     />
@@ -178,7 +179,7 @@ export default function AuthPage() {
                 
                 <div className="space-y-2">
                   <label htmlFor="password" className="text-sm font-medium text-foreground dark:text-white">
-                    Password
+                    {t('auth.password')}
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -187,7 +188,7 @@ export default function AuthPage() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                      placeholder="Enter your password"
+                      placeholder={t('auth.enterPassword')}
                       className="pl-10 pr-10 h-11"
                       required
                     />
@@ -215,17 +216,17 @@ export default function AuthPage() {
                   {isLoading ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Signing in...</span>
+                      <span>{t('auth.signingIn')}</span>
                     </div>
                   ) : (
-                    'Sign In'
+                    t('auth.signIn')
                   )}
                 </Button>
               </form>
 
               {/* Demo Accounts */}
               <div className="pt-6 border-t border-gray-200">
-                <h4 className="font-medium text-gray-900 mb-4 text-center">Demo Accounts</h4>
+                <h4 className="font-medium text-gray-900 mb-4 text-center">{t('auth.demoAccounts')}</h4>
                 <div className="space-y-3">
                   {demoAccounts.map((account) => (
                     <div
@@ -243,7 +244,7 @@ export default function AuthPage() {
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <span className="font-medium text-gray-900">{account.role}</span>
-                            <span className="text-xs text-gray-500">Click to fill</span>
+                            <span className="text-xs text-gray-500">{t('auth.clickToFill')}</span>
                           </div>
                           <p className="text-xs text-gray-600">{account.description}</p>
                         </div>

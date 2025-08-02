@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { useQuizStore, type Quiz } from '@/store/quizStore'
 import { Button } from '@/components/ui/button'
@@ -10,6 +11,7 @@ import { Clock, Target, Play, Eye } from 'lucide-react'
 import { format } from 'date-fns'
 
 export default function StudentQuizzes() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const { getQuizzesByGroup, getSubmissionsByStudent, submitQuiz } = useQuizStore()
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null)
@@ -87,15 +89,15 @@ export default function StudentQuizzes() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quizzes</h1>
-        <p className="text-gray-600 dark:text-gray-400">Take quizzes and view your results</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('student.quizzes')}</h1>
+        <p className="text-gray-600 dark:text-gray-400">{t('student.takeQuizzesAndViewResults')}</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Available Quizzes</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('student.availableQuizzes')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{availableQuizzes.length}</div>
@@ -103,7 +105,7 @@ export default function StudentQuizzes() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('student.completed')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{studentSubmissions.length}</div>
@@ -111,7 +113,7 @@ export default function StudentQuizzes() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('student.averageScore')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
@@ -124,7 +126,7 @@ export default function StudentQuizzes() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Points</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('student.totalPoints')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">
@@ -137,13 +139,13 @@ export default function StudentQuizzes() {
       {/* Available Quizzes */}
       <Card>
         <CardHeader>
-          <CardTitle>Available Quizzes</CardTitle>
+          <CardTitle>{t('student.availableQuizzes')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {availableQuizzes.length === 0 ? (
               <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                No quizzes available at the moment
+                {t('student.noQuizzesAvailableAtMoment')}
               </p>
             ) : (
               availableQuizzes.map((quiz) => {
@@ -153,41 +155,61 @@ export default function StudentQuizzes() {
                 return (
                   <div
                     key={quiz.id}
-                    className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    className="p-6 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="font-semibold text-gray-900 dark:text-white">{quiz.title}</h3>
-                          <Badge variant={isCompleted ? "default" : "secondary"}>
-                            {isCompleted ? 'Completed' : 'Available'}
+                        <div className="flex items-center space-x-2 mb-3">
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white">{quiz.title}</h3>
+                          <Badge 
+                            variant={isCompleted ? "default" : "secondary"}
+                            className={`font-medium px-3 py-1 ${
+                              isCompleted 
+                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-sm' 
+                                : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm'
+                            }`}
+                          >
+                            {isCompleted ? t('student.completed') : t('student.available')}
                           </Badge>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-400 mb-2">{quiz.description}</p>
+                        <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm leading-relaxed">{quiz.description}</p>
                         
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                          <div className="flex items-center space-x-1">
-                            <Target className="w-4 h-4" />
-                            <span>{quiz.questions.length} questions</span>
+                        <div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                          <div className="flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/20 px-3 py-2 rounded-lg">
+                            <Target className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            <span className="font-medium">{quiz.questions.length} {t('student.questions')}</span>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <Clock className="w-4 h-4" />
-                            <span>{quiz.timeLimit} min</span>
+                          <div className="flex items-center space-x-2 bg-orange-50 dark:bg-orange-900/20 px-3 py-2 rounded-lg">
+                            <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                            <span className="font-medium">{quiz.timeLimit} {t('student.min')}</span>
                           </div>
                           {quiz.dueDate && (
-                            <span>Due: {format(quiz.dueDate, 'MMM dd, yyyy')}</span>
+                            <div className="flex items-center space-x-2 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
+                              <span className="text-red-600 dark:text-red-400 font-medium">{t('student.due')}: {format(quiz.dueDate, 'MMM dd, yyyy')}</span>
+                            </div>
                           )}
                         </div>
                         
                         {isCompleted && submission && (
-                          <div className="mt-2 flex items-center space-x-4">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              Score: {submission.score}/{submission.totalPoints} 
-                              ({Math.round(submission.score / submission.totalPoints * 100)}%)
-                            </span>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              Time: {submission.timeTaken} min
-                            </span>
+                          <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-4">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                                    {t('student.score')}: {submission.score}/{submission.totalPoints} 
+                                    ({Math.round(submission.score / submission.totalPoints * 100)}%)
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                                    {t('student.time')}: {submission.timeTaken} {t('student.min')}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">✓</span>
+                              </div>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -198,17 +220,19 @@ export default function StudentQuizzes() {
                             variant="outline"
                             size="sm"
                             onClick={() => setShowResults(showResults === quiz.id ? null : quiz.id)}
+                            className="border-green-300 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-400 transition-all duration-200"
                           >
-                            <Eye className="w-4 h-4 mr-1" />
-                            View Results
+                            <Eye className="w-4 h-4 mr-2" />
+                            {t('student.viewResults')}
                           </Button>
                         ) : (
                           <Button
                             size="sm"
                             onClick={() => handleStartQuiz(quiz)}
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                           >
-                            <Play className="w-4 h-4 mr-1" />
-                            Start Quiz
+                            <Play className="w-4 h-4 mr-2" />
+                            {t('student.startQuiz')}
                           </Button>
                         )}
                       </div>
@@ -216,20 +240,25 @@ export default function StudentQuizzes() {
                     
                     {/* Results Details */}
                     {showResults === quiz.id && submission && (
-                      <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        <h4 className="font-medium mb-2">Quiz Results</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                          <div>
-                            <span className="text-gray-600 dark:text-gray-400">Score:</span>
-                            <span className="ml-2 font-medium">{submission.score}/{submission.totalPoints}</span>
+                      <div className="mt-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                        <div className="flex items-center space-x-3 mb-4">
+                          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-sm font-bold">📊</span>
                           </div>
-                          <div>
-                            <span className="text-gray-600 dark:text-gray-400">Percentage:</span>
-                            <span className="ml-2 font-medium">{Math.round(submission.score / submission.totalPoints * 100)}%</span>
+                          <h4 className="text-lg font-bold text-blue-900 dark:text-blue-100">{t('student.quizResults')}</h4>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('student.score')}</div>
+                            <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{submission.score}/{submission.totalPoints}</div>
                           </div>
-                          <div>
-                            <span className="text-gray-600 dark:text-gray-400">Submitted:</span>
-                            <span className="ml-2 font-medium">{format(submission.submittedAt, 'MMM dd, yyyy HH:mm')}</span>
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('student.percentage')}</div>
+                            <div className="text-xl font-bold text-green-600 dark:text-green-400">{Math.round(submission.score / submission.totalPoints * 100)}%</div>
+                          </div>
+                          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('student.submitted')}</div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{format(submission.submittedAt, 'MMM dd, yyyy HH:mm')}</div>
                           </div>
                         </div>
                       </div>
@@ -257,14 +286,14 @@ export default function StudentQuizzes() {
               <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="flex items-center space-x-4">
                   <span className="text-sm text-gray-600 dark:text-gray-400">
-                    Question {currentQuestionIndex + 1} of {selectedQuiz.questions.length}
+                    {t('student.question')} {currentQuestionIndex + 1} {t('student.of')} {selectedQuiz.questions.length}
                   </span>
                   <Progress value={getProgressPercentage()} className="w-32" />
                 </div>
                 {getTimeRemaining() !== null && (
                   <div className="flex items-center space-x-1 text-sm">
                     <Clock className="w-4 h-4" />
-                    <span>{getTimeRemaining()} min remaining</span>
+                    <span>{getTimeRemaining()} {t('student.minRemaining')}</span>
                   </div>
                 )}
               </div>
@@ -309,7 +338,7 @@ export default function StudentQuizzes() {
                   onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
                   disabled={currentQuestionIndex === 0}
                 >
-                  Previous
+                  {t('student.previous')}
                 </Button>
                 
                 <div className="flex items-center space-x-2">
@@ -317,14 +346,14 @@ export default function StudentQuizzes() {
                     <Button
                       onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
                     >
-                      Next
+                      {t('student.next')}
                     </Button>
                   ) : (
                     <Button
                       onClick={handleSubmitQuiz}
                       className="bg-green-600 hover:bg-green-700"
                     >
-                      Submit Quiz
+                      {t('student.submitQuiz')}
                     </Button>
                   )}
                 </div>

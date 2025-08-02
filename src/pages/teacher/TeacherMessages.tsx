@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { useChatStore, type ChatGroup } from '@/store/chatStore'
 import { Button } from '@/components/ui/button'
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 export default function TeacherMessages() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const { messages, addMessage, getMessagesByGroup, getMessagesByParticipants, getGroupsByUser, markGroupAsRead, setTyping, getTypingUsers, deleteMessage, editMessage, getMessagesForTeacher } = useChatStore()
   const [selectedGroup, setSelectedGroup] = useState<ChatGroup | null>(null)
@@ -136,7 +138,7 @@ export default function TeacherMessages() {
     if (group.type === 'individual') {
       const otherParticipant = group.participants.find(p => p !== user?.id)
       const student = demoStudents.find(s => s.id === otherParticipant)
-      return student ? student.name : 'Individual Chat'
+      return student ? student.name : t('teacher.individualChat')
     }
     return group.name
   }
@@ -160,7 +162,7 @@ export default function TeacherMessages() {
             <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
             <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
           </div>
-          <span>{typingUserNames.join(', ')} is typing...</span>
+          <span>{typingUserNames.join(', ')} {t('teacher.isTyping')}</span>
         </div>
       )
     }
@@ -193,15 +195,15 @@ export default function TeacherMessages() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Messages</h1>
-          <p className="text-muted-foreground">Communicate with your students and groups</p>
+          <h1 className="text-3xl font-bold text-foreground">{t('teacher.messages')}</h1>
+          <p className="text-muted-foreground">{t('teacher.communicateWithStudentsAndGroups')}</p>
         </div>
         <Button 
           onClick={() => setIsNewChat(true)}
           className="flex-0 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium"
         >
           <Plus className="w-4 h-4 mr-2" />
-          New Chat
+          {t('teacher.newChat')}
         </Button>
       </div>
 
@@ -212,7 +214,7 @@ export default function TeacherMessages() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="w-5 h-5" />
-                <span>Conversations</span>
+                <span>{t('teacher.conversations')}</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -246,7 +248,7 @@ export default function TeacherMessages() {
                                 {group.lastMessage.content.length > 30 && '...'}
                               </>
                             ) : (
-                              'No messages yet'
+                              t('teacher.noMessagesYet')
                             )}
                           </p>
                         </div>
@@ -284,7 +286,7 @@ export default function TeacherMessages() {
                            demoStudents.find(s => s.id === selectedStudent)?.name}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          {selectedGroup?.type === 'group' ? 'Group Chat' : 'Individual Chat'}
+                          {selectedGroup?.type === 'group' ? t('teacher.groupChat') : t('teacher.individualChat')}
                         </p>
                       </div>
                     </div>
@@ -326,10 +328,10 @@ export default function TeacherMessages() {
                               />
                               <div className="flex space-x-2">
                                 <Button size="sm" onClick={handleSaveEdit}>
-                                  Save
+                                  {t('teacher.save')}
                                 </Button>
                                 <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                                  Cancel
+                                  {t('teacher.cancel')}
                                 </Button>
                               </div>
                             </div>
@@ -373,7 +375,7 @@ export default function TeacherMessages() {
                       value={newMessage}
                       onChange={handleTyping}
                       onKeyPress={handleKeyPress}
-                      placeholder="Type your message..."
+                      placeholder={t('teacher.typeYourMessage')}
                       className="flex-1"
                     />
                     <Button onClick={handleSendMessage} disabled={!newMessage.trim()}>
@@ -386,7 +388,7 @@ export default function TeacherMessages() {
               <CardContent className="flex-1 flex items-center justify-center">
                 <div className="text-center text-gray-500 dark:text-gray-400">
                   <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>Select a conversation to start messaging</p>
+                  <p>{t('teacher.selectConversationToStartMessaging')}</p>
                 </div>
               </CardContent>
             )}
@@ -400,7 +402,7 @@ export default function TeacherMessages() {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsNewChat(false)} />
           <Card className="relative w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl">
             <CardHeader>
-              <CardTitle>Start New Chat</CardTitle>
+              <CardTitle>{t('teacher.startNewChat')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">

@@ -1,8 +1,9 @@
 import { useState, lazy, Suspense } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Gamepad2, Brain, Keyboard, Trophy, Clock, Target, BookOpen } from 'lucide-react'
+import { Gamepad2, Brain, Keyboard, Trophy, Clock, Target, BookOpen, Sparkles, Zap, Star } from 'lucide-react'
 
 // Lazy load game components to prevent loading issues
 const MemoryGame = lazy(() => import('@/components/games/MemoryGame').then(module => ({ default: module.MemoryGame })))
@@ -10,6 +11,7 @@ const TypingSpeedGame = lazy(() => import('@/components/games/TypingSpeedGame').
 const EnglishLearningGame = lazy(() => import('@/components/games/EnglishLearningGame').then(module => ({ default: module.EnglishLearningGame })))
 
 export default function StudentGames() {
+  const { t } = useTranslation()
   console.log('StudentGames component rendering...')
   
   const [activeGame, setActiveGame] = useState<'memory' | 'typing' | 'english' | null>(null)
@@ -21,9 +23,9 @@ export default function StudentGames() {
 
     return (
       <Suspense fallback={
-        <div className="text-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading game...</p>
+        <div className="text-center p-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-6"></div>
+          <p className="text-muted-foreground text-lg">{t('student.loadingGame')}</p>
         </div>
       }>
         {activeGame === 'memory' && <MemoryGame />}
@@ -34,66 +36,86 @@ export default function StudentGames() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Gamepad2 className="h-8 w-8 text-purple-500" />
-            Break Time Games
-          </h1>
-          <p className="text-muted-foreground">
-            Take a break and have fun with these brain-boosting games!
-          </p>
+    <div className="container mx-auto p-6 space-y-8">
+      {/* Enhanced Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
+              <Gamepad2 className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                {t('student.breakTimeGames')}
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                {t('student.takeBreakAndHaveFun')}
+              </p>
+            </div>
+          </div>
         </div>
         
-        {/* Break Timer Info */}
-        <Card className="w-full md:w-80">
+        {/* Enhanced Break Timer Info */}
+        <Card className="w-full md:w-96 bg-gradient-to-br from-orange-50 to-yellow-50 border-orange-200 shadow-lg">
           <CardContent className="pt-6">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="h-5 w-5 text-orange-500" />
-              <span className="text-sm font-medium">Break Time</span>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-md">
+                <Clock className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <span className="text-lg font-semibold text-orange-700">{t('student.breakTime')}</span>
+                <p className="text-sm text-orange-600">
+                  {t('student.perfectForPomodoroBreaks')}
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Perfect for your 5-minute Pomodoro breaks
-            </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Game Selection */}
+      {/* Enhanced Game Selection */}
       {!activeGame ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Memory Game Card */}
           <Card 
-            className="cursor-pointer transition-all hover:shadow-lg hover:scale-105"
+            className="cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 group"
             onClick={() => setActiveGame('memory')}
           >
-            <CardHeader>
+            <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Brain className="h-6 w-6 text-blue-500" />
-                  Memory Game
-                </CardTitle>
-                <Badge variant="secondary">Brain Training</Badge>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Brain className="h-6 w-6 text-white" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-blue-800">{t('student.memoryGame')}</CardTitle>
+                </div>
+                <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200">
+                  {t('student.brainTraining')}
+                </Badge>
               </div>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Test your memory by matching pairs of cards. Find all matches to win!
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                {t('student.testMemoryMatchingPairs')}
               </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Target className="h-4 w-4 text-green-500" />
-                  <span>Improve concentration</span>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Target className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="font-medium text-green-700">{t('student.improveConcentration')}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Trophy className="h-4 w-4 text-yellow-500" />
-                  <span>Beat your high score</span>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <Trophy className="h-4 w-4 text-yellow-600" />
+                  </div>
+                  <span className="font-medium text-yellow-700">{t('student.beatHighScore')}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-blue-500" />
-                  <span>Quick 5-minute sessions</span>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Clock className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <span className="font-medium text-blue-700">{t('student.quick5MinuteSessions')}</span>
                 </div>
               </div>
             </CardContent>
@@ -101,34 +123,44 @@ export default function StudentGames() {
 
           {/* Typing Speed Game Card */}
           <Card 
-            className="cursor-pointer transition-all hover:shadow-lg hover:scale-105"
+            className="cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 group"
             onClick={() => setActiveGame('typing')}
           >
-            <CardHeader>
+            <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <Keyboard className="h-6 w-6 text-green-500" />
-                  Typing Speed Game
-                </CardTitle>
-                <Badge variant="secondary">Skill Building</Badge>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Keyboard className="h-6 w-6 text-white" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-green-800">{t('student.typingSpeedGame')}</CardTitle>
+                </div>
+                <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
+                  {t('student.skillBuilding')}
+                </Badge>
               </div>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Improve your typing speed and accuracy with fun word challenges!
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                {t('student.improveTypingSpeedAccuracy')}
               </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Target className="h-4 w-4 text-green-500" />
-                  <span>Enhance typing skills</span>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Target className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="font-medium text-green-700">{t('student.enhanceTypingSkills')}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Trophy className="h-4 w-4 text-yellow-500" />
-                  <span>Track your progress</span>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <Trophy className="h-4 w-4 text-yellow-600" />
+                  </div>
+                  <span className="font-medium text-yellow-700">{t('student.trackProgress')}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-blue-500" />
-                  <span>Quick 5-minute sessions</span>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Clock className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <span className="font-medium text-blue-700">{t('student.quick5MinuteSessions')}</span>
                 </div>
               </div>
             </CardContent>
@@ -136,99 +168,127 @@ export default function StudentGames() {
 
           {/* English Learning Game Card */}
           <Card 
-            className="cursor-pointer transition-all hover:shadow-lg hover:scale-105"
+            className="cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200 group"
             onClick={() => setActiveGame('english')}
           >
-            <CardHeader>
+            <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="h-6 w-6 text-purple-500" />
-                  English Learning Game
-                </CardTitle>
-                <Badge variant="secondary">Language Learning</Badge>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <BookOpen className="h-6 w-6 text-white" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-purple-800">{t('student.englishLearningGame')}</CardTitle>
+                </div>
+                <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200">
+                  {t('student.languageLearning')}
+                </Badge>
               </div>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Improve your English skills with vocabulary, grammar, and sentence building challenges!
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                {t('student.improveEnglishSkills')}
               </p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Target className="h-4 w-4 text-green-500" />
-                  <span>Learn vocabulary & grammar</span>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Target className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="font-medium text-green-700">{t('student.learnVocabularyGrammar')}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Trophy className="h-4 w-4 text-yellow-500" />
-                  <span>Practice English skills</span>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <Trophy className="h-4 w-4 text-yellow-600" />
+                  </div>
+                  <span className="font-medium text-yellow-700">{t('student.practiceEnglishSkills')}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-blue-500" />
-                  <span>Perfect for English groups</span>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Clock className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <span className="font-medium text-blue-700">{t('student.perfectForEnglishGroups')}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
       ) : (
-        /* Active Game View */
-        <div className="space-y-6">
-          {/* Game Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        /* Enhanced Active Game View */
+        <div className="space-y-8">
+          {/* Enhanced Game Header */}
+          <div className="flex items-center justify-between bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
+            <div className="flex items-center gap-6">
               <Button
                 variant="outline"
                 onClick={() => setActiveGame(null)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-white hover:bg-purple-50 border-purple-200 text-purple-700 hover:text-purple-800 transition-colors"
               >
-                ← Back to Games
+                ← {t('student.backToGames')}
               </Button>
-              <h2 className="text-2xl font-bold">
-                {activeGame === 'memory' ? 'Memory Game' : 
-                 activeGame === 'typing' ? 'Typing Speed Game' : 
-                 'English Learning Game'}
-              </h2>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                  {activeGame === 'memory' ? <Brain className="h-5 w-5 text-white" /> :
+                   activeGame === 'typing' ? <Keyboard className="h-5 w-5 text-white" /> :
+                   <BookOpen className="h-5 w-5 text-white" />}
+                </div>
+                <h2 className="text-2xl font-bold text-purple-800">
+                  {activeGame === 'memory' ? t('student.memoryGame') : 
+                   activeGame === 'typing' ? t('student.typingSpeedGame') : 
+                   t('student.englishLearningGame')}
+                </h2>
+              </div>
             </div>
-            <Badge variant="outline">
-              Break Time Activity
+            <Badge variant="outline" className="bg-white border-purple-200 text-purple-700 px-4 py-2">
+              <Sparkles className="h-4 w-4 mr-2" />
+              {t('student.breakTimeActivity')}
             </Badge>
           </div>
 
-          {/* Game Component */}
-          <Card>
-            <CardContent className="p-6">
+          {/* Enhanced Game Component */}
+          <Card className="shadow-xl border-0 bg-gradient-to-br from-white to-gray-50">
+            <CardContent className="p-8">
               {renderGameComponent()}
             </CardContent>
           </Card>
         </div>
       )}
 
-      {/* Game Benefits Info */}
+      {/* Enhanced Game Benefits Info */}
       {!activeGame && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Why Play During Breaks?</CardTitle>
+        <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200 shadow-xl">
+          <CardHeader className="text-center pb-6">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Star className="h-8 w-8 text-yellow-500" />
+              <CardTitle className="text-2xl font-bold text-indigo-800">{t('student.whyPlayDuringBreaks')}</CardTitle>
+              <Star className="h-8 w-8 text-yellow-500" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center">
-                <Brain className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-                <h3 className="font-semibold mb-1">Mental Refresh</h3>
-                <p className="text-sm text-muted-foreground">
-                  Give your brain a different kind of workout
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Brain className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="font-bold text-lg mb-3 text-blue-800">{t('student.mentalRefresh')}</h3>
+                <p className="text-sm text-blue-700 leading-relaxed">
+                  {t('student.giveBrainDifferentWorkout')}
                 </p>
               </div>
-              <div className="text-center">
-                <Target className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                <h3 className="font-semibold mb-1">Skill Building</h3>
-                <p className="text-sm text-muted-foreground">
-                  Improve memory, typing, and concentration
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Target className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="font-bold text-lg mb-3 text-green-800">{t('student.skillBuilding')}</h3>
+                <p className="text-sm text-green-700 leading-relaxed">
+                  {t('student.improveMemoryTypingConcentration')}
                 </p>
               </div>
-              <div className="text-center">
-                <Trophy className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-                <h3 className="font-semibold mb-1">Fun Challenge</h3>
-                <p className="text-sm text-muted-foreground">
-                  Enjoyable way to spend your break time
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Trophy className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="font-bold text-lg mb-3 text-yellow-800">{t('student.funChallenge')}</h3>
+                <p className="text-sm text-yellow-700 leading-relaxed">
+                  {t('student.enjoyableWayToSpendBreak')}
                 </p>
               </div>
             </div>

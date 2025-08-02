@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useTeachersStore, type Teacher } from '@/store/teachersStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Edit, Trash2, Plus, Search, X, User, Phone, Mail, BookOpen, DollarSign, Users, TrendingUp } from 'lucide-react'
 
 export default function TeachersPage() {
+  const { t } = useTranslation()
   const { teachers, addTeacher, updateTeacher, deleteTeacher } = useTeachersStore()
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -53,7 +55,7 @@ export default function TeachersPage() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this teacher?')) {
+    if (confirm(t('admin.confirmDeleteTeacher'))) {
       deleteTeacher(id)
     }
   }
@@ -92,12 +94,12 @@ export default function TeachersPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Teachers Management</h1>
-          <p className="text-muted-foreground">Manage all teachers in the educational center</p>
+          <h1 className="text-3xl font-bold">{t('admin.teachersManagement')}</h1>
+          <p className="text-muted-foreground">{t('admin.teachersManagementDesc')}</p>
         </div>
         <Button onClick={openAddModal} className="flex-0 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium">
           <Plus className="h-4 w-4" />
-          Add Teacher
+          {t('admin.addTeacher')}
         </Button>
       </div>
 
@@ -107,7 +109,7 @@ export default function TeachersPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Search teachers..."
+                placeholder={t('admin.searchTeachers')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -119,14 +121,14 @@ export default function TeachersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Full Name</TableHead>
-                <TableHead>Phone Number</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Students</TableHead>
-                <TableHead>Salary</TableHead>
-                <TableHead>KPI</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('admin.fullName')}</TableHead>
+                <TableHead>{t('admin.phoneNumber')}</TableHead>
+                <TableHead>{t('admin.email')}</TableHead>
+                <TableHead>{t('admin.subject')}</TableHead>
+                <TableHead>{t('admin.students')}</TableHead>
+                <TableHead>{t('admin.salary')}</TableHead>
+                <TableHead>{t('admin.kpi')}</TableHead>
+                <TableHead className="text-right">{t('admin.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -185,10 +187,10 @@ export default function TeachersPage() {
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold text-gray-900">
-                        {editingTeacher ? 'Edit Teacher' : 'Add New Teacher'}
+                        {editingTeacher ? t('admin.editTeacher') : t('admin.addNewTeacher')}
                       </CardTitle>
                       <CardDescription className="text-gray-600">
-                        {editingTeacher ? 'Update teacher information' : 'Add a new teacher to the system'}
+                        {editingTeacher ? t('admin.updateTeacherInfo') : t('admin.addNewTeacherDesc')}
                       </CardDescription>
                     </div>
                   </div>
@@ -207,17 +209,17 @@ export default function TeachersPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Personal Information */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Personal Information</h3>
+                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">{t('admin.personalInformation')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <User className="w-4 h-4" />
-                          Full Name
+                          {t('admin.fullName')}
                         </label>
                         <Input
                           value={formData.fullName}
                           onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                          placeholder="Enter full name"
+                          placeholder={t('admin.enterFullName')}
                           className="h-10"
                           required
                         />
@@ -225,12 +227,12 @@ export default function TeachersPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <Phone className="w-4 h-4" />
-                          Phone Number
+                          {t('admin.phoneNumber')}
                         </label>
                         <Input
                           value={formData.phoneNumber}
                           onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                          placeholder="Enter phone number"
+                          placeholder={t('admin.enterPhoneNumber')}
                           className="h-10"
                           required
                         />
@@ -239,13 +241,13 @@ export default function TeachersPage() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                         <Mail className="w-4 h-4" />
-                        Email Address
+                        {t('admin.emailAddress')}
                       </label>
                       <Input
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="Enter email address"
+                        placeholder={t('admin.enterEmailAddress')}
                         className="h-10"
                         required
                       />
@@ -254,17 +256,17 @@ export default function TeachersPage() {
 
                   {/* Professional Information */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Professional Information</h3>
+                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">{t('admin.professionalInformation')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <BookOpen className="w-4 h-4" />
-                          Subject
+                          {t('admin.subject')}
                         </label>
                         <Input
                           value={formData.subject}
                           onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                          placeholder="Enter subject"
+                          placeholder={t('admin.enterSubject')}
                           className="h-10"
                           required
                         />
@@ -272,13 +274,13 @@ export default function TeachersPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <DollarSign className="w-4 h-4" />
-                          Salary
+                          {t('admin.salary')}
                         </label>
                         <Input
                           type="number"
                           // value={formData.salary}
                           onChange={(e) => setFormData({ ...formData, salary: Number(e.target.value) })}
-                          placeholder="Enter salary"
+                          placeholder={t('admin.enterSalary')}
                           className="h-10"
                           required
                         />
@@ -288,13 +290,13 @@ export default function TeachersPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <Users className="w-4 h-4" />
-                          Students Count
+                          {t('admin.studentsCount')}
                         </label>
                         <Input
                           type="number"
                           // value={formData.studentsCount}
                           onChange={(e) => setFormData({ ...formData, studentsCount: Number(e.target.value) })}
-                          placeholder="Enter students count"
+                          placeholder={t('admin.enterStudentsCount')}
                           className="h-10"
                           required
                         />
@@ -302,13 +304,13 @@ export default function TeachersPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <TrendingUp className="w-4 h-4" />
-                          KPI (%)
+                          {t('admin.kpi')} (%)
                         </label>
                         <Input
                           type="number"
                           // value={formData.kpi}
                           onChange={(e) => setFormData({ ...formData, kpi: Number(e.target.value) })}
-                          placeholder="Enter KPI percentage"
+                          placeholder={t('admin.enterKpiPercentage')}
                           className="h-10"
                           required
                         />
@@ -322,7 +324,7 @@ export default function TeachersPage() {
                       type="submit" 
                       className="flex-1 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium"
                     >
-                      {editingTeacher ? 'Update Teacher' : 'Add Teacher'}
+                      {editingTeacher ? t('admin.updateTeacher') : t('admin.addTeacher')}
                     </Button>
                     <Button 
                       type="button" 
@@ -330,7 +332,7 @@ export default function TeachersPage() {
                       onClick={handleCloseModal}
                       className="h-11 px-6"
                     >
-                      Cancel
+                      {t('common.cancel')}
                     </Button>
                   </div>
                 </form>

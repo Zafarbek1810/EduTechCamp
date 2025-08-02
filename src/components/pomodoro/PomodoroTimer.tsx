@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { usePomodoroStore } from '@/store/pomodoroStore'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,6 +13,7 @@ interface PomodoroTimerProps {
 }
 
 export function PomodoroTimer({ className = '', showStats = true }: PomodoroTimerProps) {
+  const { t } = useTranslation()
   const {
     isRunning,
     isPaused,
@@ -76,10 +78,10 @@ export function PomodoroTimer({ className = '', showStats = true }: PomodoroTime
           
           // Browser notification (if permission granted)
           if (Notification.permission === 'granted') {
-            new Notification(`${sessionType === 'focus' ? 'Focus' : 'Break'} session completed!`, {
+            new Notification(`${sessionType === 'focus' ? t('student.focus') : t('student.break')} ${t('student.sessionCompleted')}!`, {
               body: sessionType === 'focus' 
-                ? 'Time for a break!' 
-                : 'Ready for another focus session?',
+                ? t('student.timeForBreak') 
+                : t('student.readyForAnotherFocusSession'),
               icon: '/favicon.ico'
             })
           }
@@ -133,22 +135,22 @@ export function PomodoroTimer({ className = '', showStats = true }: PomodoroTime
           {sessionType === 'focus' ? (
             <>
               <Timer className="h-5 w-5 text-blue-500" />
-              Focus Session
+              {t('student.focusSession')}
             </>
           ) : (
             <>
               <Coffee className="h-5 w-5 text-green-500" />
-              Break Time
+              {t('student.breakTime')}
             </>
           )}
         </CardTitle>
         <div className="flex justify-center gap-2">
           <Badge variant={sessionType === 'focus' ? 'default' : 'secondary'}>
-            Cycle {currentCycle}
+            {t('student.cycle')} {currentCycle}
           </Badge>
           {showStats && (
             <Badge variant="outline">
-              Today: {todayCompletedCycles} completed
+              {t('student.today')}: {todayCompletedCycles} {t('student.completed')}
             </Badge>
           )}
         </div>
@@ -174,12 +176,12 @@ export function PomodoroTimer({ className = '', showStats = true }: PomodoroTime
             {isRunning ? (
               <>
                 <Pause className="h-4 w-4" />
-                Pause
+                {t('student.pause')}
               </>
             ) : (
               <>
                 <Play className="h-4 w-4" />
-                {isPaused ? 'Resume' : 'Start'}
+                {isPaused ? t('student.resume') : t('student.start')}
               </>
             )}
           </Button>
@@ -191,16 +193,16 @@ export function PomodoroTimer({ className = '', showStats = true }: PomodoroTime
             className="flex items-center gap-2"
           >
             <RotateCcw className="h-4 w-4" />
-            Reset
+            {t('student.reset')}
           </Button>
         </div>
 
         {/* Session Info */}
         <div className="text-center text-sm text-muted-foreground">
           {sessionType === 'focus' ? (
-            <p>Stay focused! Next: {breakDuration}-minute break</p>
+            <p>{t('student.stayFocused')}! {t('student.next')}: {breakDuration}-{t('student.minute')} {t('student.break')}</p>
           ) : (
-            <p>Take a break! Next: {focusDuration}-minute focus session</p>
+            <p>{t('student.takeBreak')}! {t('student.next')}: {focusDuration}-{t('student.minute')} {t('student.focusSession')}</p>
           )}
         </div>
       </CardContent>

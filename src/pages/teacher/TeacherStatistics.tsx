@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { useGroupsStore } from '@/store/groupsStore'
 import { useStudentsStore } from '@/store/studentsStore'
@@ -29,6 +30,7 @@ import {
 } from 'lucide-react'
 
 export default function TeacherStatistics() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const { getGroupsByTeacher } = useGroupsStore()
   const { getStudentsByTeacher } = useStudentsStore()
@@ -122,69 +124,69 @@ export default function TeacherStatistics() {
 
   // Attendance vs Homework pie chart data
   const attendanceVsHomeworkData = [
-    { name: 'Present & Homework Done', value: totalHomeworkDone, color: '#10b981' },
-    { name: 'Present & No Homework', value: totalPresent - totalHomeworkDone, color: '#f59e0b' },
-    { name: 'Absent', value: totalAbsent, color: '#ef4444' }
+    { name: t('teacher.presentAndHomeworkDone'), value: totalHomeworkDone, color: '#10b981' },
+    { name: t('teacher.presentAndNoHomework'), value: totalPresent - totalHomeworkDone, color: '#f59e0b' },
+    { name: t('teacher.absent'), value: totalAbsent, color: '#ef4444' }
   ]
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Statistics</h1>
-        <p className="text-muted-foreground">Overview of your teaching performance and student progress</p>
+        <h1 className="text-3xl font-bold text-foreground">{t('teacher.statistics')}</h1>
+        <p className="text-muted-foreground">{t('teacher.overviewOfTeachingPerformance')}</p>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.totalStudents')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalStudents}</div>
             <p className="text-xs text-muted-foreground">
-              Across {totalGroups} groups
+              {t('teacher.across')} {totalGroups} {t('teacher.groups')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Attendance Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.attendanceRate')}</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{Math.round(attendanceRate)}%</div>
             <p className="text-xs text-muted-foreground">
-              {totalPresent} present / {totalPresent + totalAbsent} total
+              {totalPresent} {t('teacher.present')} / {totalPresent + totalAbsent} {t('teacher.total')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Homework Completion</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.homeworkCompletion')}</CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{Math.round(homeworkCompletionRate)}%</div>
             <p className="text-xs text-muted-foreground">
-              {totalHomeworkDone} completed
+              {totalHomeworkDone} {t('teacher.completed')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Points</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.averagePoints')}</CardTitle>
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{Math.round(averagePoints * 10) / 10}</div>
             <p className="text-xs text-muted-foreground">
-              Out of 10 points
+              {t('teacher.outOf')} 10 {t('teacher.points')}
             </p>
           </CardContent>
         </Card>
@@ -195,9 +197,9 @@ export default function TeacherStatistics() {
         {/* Group Performance */}
         <Card>
           <CardHeader>
-            <CardTitle>Group Performance</CardTitle>
+            <CardTitle>{t('teacher.groupPerformance')}</CardTitle>
             <CardDescription>
-              Attendance rates and average points by group
+              {t('teacher.attendanceRatesAndAveragePointsByGroup')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -207,8 +209,8 @@ export default function TeacherStatistics() {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="attendanceRate" fill="#3b82f6" name="Attendance %" />
-                <Bar dataKey="avgPoints" fill="#10b981" name="Avg Points" />
+                <Bar dataKey="attendanceRate" fill="#3b82f6" name={t('teacher.attendancePercent')} />
+                <Bar dataKey="avgPoints" fill="#10b981" name={t('teacher.avgPoints')} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -217,9 +219,9 @@ export default function TeacherStatistics() {
         {/* Attendance vs Homework */}
         <Card>
           <CardHeader>
-            <CardTitle>Attendance & Homework Overview</CardTitle>
+            <CardTitle>{t('teacher.attendanceAndHomeworkOverview')}</CardTitle>
             <CardDescription>
-              Distribution of student attendance and homework completion
+              {t('teacher.distributionOfStudentAttendanceAndHomework')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -251,9 +253,9 @@ export default function TeacherStatistics() {
         {/* Monthly Trend */}
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Attendance Trend</CardTitle>
+            <CardTitle>{t('teacher.monthlyAttendanceTrend')}</CardTitle>
             <CardDescription>
-              Attendance rate and lessons conducted over time
+              {t('teacher.attendanceRateAndLessonsConductedOverTime')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -263,8 +265,8 @@ export default function TeacherStatistics() {
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="attendance" stroke="#3b82f6" name="Attendance %" />
-                <Line type="monotone" dataKey="lessons" stroke="#10b981" name="Lessons" />
+                <Line type="monotone" dataKey="attendance" stroke="#3b82f6" name={t('teacher.attendancePercent')} />
+                <Line type="monotone" dataKey="lessons" stroke="#10b981" name={t('teacher.lessons')} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -273,9 +275,9 @@ export default function TeacherStatistics() {
         {/* Top Students */}
         <Card>
           <CardHeader>
-            <CardTitle>Top Performing Students</CardTitle>
+            <CardTitle>{t('teacher.topPerformingStudents')}</CardTitle>
             <CardDescription>
-              Students with highest average points
+              {t('teacher.studentsWithHighestAveragePoints')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -285,7 +287,7 @@ export default function TeacherStatistics() {
                 <XAxis type="number" />
                 <YAxis dataKey="name" type="category" width={100} />
                 <Tooltip />
-                <Bar dataKey="avgPoints" fill="#8b5cf6" name="Avg Points" />
+                <Bar dataKey="avgPoints" fill="#8b5cf6" name={t('teacher.avgPoints')} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -298,12 +300,12 @@ export default function TeacherStatistics() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Target className="w-5 h-5" />
-              <span>Goals & Targets</span>
+              <span>{t('teacher.goalsAndTargets')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm">Target Attendance</span>
+              <span className="text-sm">{t('teacher.targetAttendance')}</span>
               <span className="text-sm font-medium">95%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -314,7 +316,7 @@ export default function TeacherStatistics() {
             </div>
             
             <div className="flex justify-between items-center">
-              <span className="text-sm">Target Homework</span>
+              <span className="text-sm">{t('teacher.targetHomework')}</span>
               <span className="text-sm font-medium">90%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -325,7 +327,7 @@ export default function TeacherStatistics() {
             </div>
             
             <div className="flex justify-between items-center">
-              <span className="text-sm">Target Points</span>
+              <span className="text-sm">{t('teacher.targetPoints')}</span>
               <span className="text-sm font-medium">8.0</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
@@ -341,25 +343,25 @@ export default function TeacherStatistics() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Star className="w-5 h-5" />
-              <span>Highlights</span>
+              <span>{t('teacher.highlights')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-sm">Best performing group: Math A</span>
+              <span className="text-sm">{t('teacher.bestPerformingGroup')}: Math A</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span className="text-sm">Most consistent student: Alice Johnson</span>
+              <span className="text-sm">{t('teacher.mostConsistentStudent')}: Alice Johnson</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span className="text-sm">Highest attendance: Chemistry A</span>
+              <span className="text-sm">{t('teacher.highestAttendance')}: Chemistry A</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-              <span className="text-sm">Most lessons this month: Physics A</span>
+              <span className="text-sm">{t('teacher.mostLessonsThisMonth')}: Physics A</span>
             </div>
           </CardContent>
         </Card>
@@ -368,25 +370,25 @@ export default function TeacherStatistics() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Calendar className="w-5 h-5" />
-              <span>Recent Activity</span>
+              <span>{t('teacher.recentActivity')}</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="text-sm">
-              <div className="font-medium">Today</div>
-              <div className="text-muted-foreground">Marked attendance for Math A</div>
+              <div className="font-medium">{t('teacher.today')}</div>
+              <div className="text-muted-foreground">{t('teacher.markedAttendanceForMathA')}</div>
             </div>
             <div className="text-sm">
-              <div className="font-medium">Yesterday</div>
-              <div className="text-muted-foreground">Created lesson for Physics A</div>
+              <div className="font-medium">{t('teacher.yesterday')}</div>
+              <div className="text-muted-foreground">{t('teacher.createdLessonForPhysicsA')}</div>
             </div>
             <div className="text-sm">
-              <div className="font-medium">2 days ago</div>
-              <div className="text-muted-foreground">Updated homework for Chemistry A</div>
+              <div className="font-medium">{t('teacher.twoDaysAgo')}</div>
+              <div className="text-muted-foreground">{t('teacher.updatedHomeworkForChemistryA')}</div>
             </div>
             <div className="text-sm">
-              <div className="font-medium">3 days ago</div>
-              <div className="text-muted-foreground">Assigned points to Math B students</div>
+              <div className="font-medium">{t('teacher.threeDaysAgo')}</div>
+              <div className="text-muted-foreground">{t('teacher.assignedPointsToMathBStudents')}</div>
             </div>
           </CardContent>
         </Card>

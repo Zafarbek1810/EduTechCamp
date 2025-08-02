@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { useQuizStore, type QuizQuestion } from '@/store/quizStore'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,7 @@ import { Plus, Trash2, Eye, Users, Clock, Target } from 'lucide-react'
 import { format } from 'date-fns'
 
 export default function TeacherQuizzes() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const { addQuiz, deleteQuiz, getQuizzesByTeacher, getSubmissionsByQuiz } = useQuizStore()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -108,8 +110,8 @@ export default function TeacherQuizzes() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quizzes</h1>
-          <p className="text-gray-600 dark:text-gray-400">Create and manage quizzes for your students</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('teacher.quizzes')}</h1>
+          <p className="text-gray-600 dark:text-gray-400">{t('teacher.createAndManageQuizzesForStudents')}</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -118,29 +120,29 @@ export default function TeacherQuizzes() {
               resetForm()
             }}>
               <Plus className="w-4 h-4 mr-2" />
-              Create Quiz
+              {t('teacher.createQuiz')}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-800">
             <DialogHeader>
               <DialogTitle>
-                {isEditMode ? 'Edit Quiz' : 'Create New Quiz'}
+                {isEditMode ? t('teacher.editQuiz') : t('teacher.createNewQuiz')}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-6">
               {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="title">Quiz Title</Label>
+                  <Label htmlFor="title">{t('teacher.quizTitle')}</Label>
                   <Input
                     id="title"
                     value={formData.title}
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="Enter quiz title"
+                    placeholder={t('teacher.enterQuizTitle')}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="timeLimit">Time Limit (minutes)</Label>
+                  <Label htmlFor="timeLimit">{t('teacher.timeLimitMinutes')}</Label>
                   <Input
                     id="timeLimit"
                     type="number"
@@ -151,17 +153,17 @@ export default function TeacherQuizzes() {
               </div>
               
               <div>
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t('teacher.description')}</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Enter quiz description"
+                  placeholder={t('teacher.enterQuizDescription')}
                 />
               </div>
               
               <div>
-                <Label htmlFor="dueDate">Due Date</Label>
+                <Label htmlFor="dueDate">{t('teacher.dueDate')}</Label>
                 <Input
                   id="dueDate"
                   type="datetime-local"
@@ -173,10 +175,10 @@ export default function TeacherQuizzes() {
               {/* Questions */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <Label>Questions</Label>
+                  <Label>{t('teacher.questions')}</Label>
                   <Button type="button" variant="outline" onClick={addQuestion}>
                     <Plus className="w-4 h-4 mr-2" />
-                    Add Question
+                    {t('teacher.addQuestion')}
                   </Button>
                 </div>
                 
@@ -186,7 +188,7 @@ export default function TeacherQuizzes() {
                       <CardContent className="p-4">
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
-                            <Label>Question {index + 1}</Label>
+                            <Label>{t('teacher.question')} {index + 1}</Label>
                             <Button
                               type="button"
                               variant="ghost"
@@ -200,12 +202,12 @@ export default function TeacherQuizzes() {
                           <Input
                             value={question.question}
                             onChange={(e) => updateQuestion(index, 'question', e.target.value)}
-                            placeholder="Enter question"
+                            placeholder={t('teacher.enterQuestion')}
                           />
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <Label>Options</Label>
+                              <Label>{t('teacher.options')}</Label>
                               {question.options.map((option, optionIndex) => (
                                 <div key={optionIndex} className="flex items-center space-x-2 mt-2">
                                   <input
@@ -221,14 +223,14 @@ export default function TeacherQuizzes() {
                                       newOptions[optionIndex] = e.target.value
                                       updateQuestion(index, 'options', newOptions)
                                     }}
-                                    placeholder={`Option ${optionIndex + 1}`}
+                                    placeholder={`${t('teacher.option')} ${optionIndex + 1}`}
                                   />
                                 </div>
                               ))}
                             </div>
                             
                             <div>
-                              <Label>Points</Label>
+                              <Label>{t('teacher.points')}</Label>
                               <Input
                                 type="number"
                                 value={question.points}
@@ -246,7 +248,7 @@ export default function TeacherQuizzes() {
               
               <div className="flex gap-2 pt-4">
                 <Button onClick={handleCreateQuiz} className="flex-1 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium">
-                  {isEditMode ? 'Update Quiz' : 'Create Quiz'}
+                  {isEditMode ? t('teacher.updateQuiz') : t('teacher.createQuiz')}
                 </Button>
               </div>
             </div>
@@ -258,7 +260,7 @@ export default function TeacherQuizzes() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Quizzes</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.totalQuizzes')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{teacherQuizzes.length}</div>
@@ -266,7 +268,7 @@ export default function TeacherQuizzes() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Active Quizzes</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.activeQuizzes')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
@@ -276,7 +278,7 @@ export default function TeacherQuizzes() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.totalSubmissions')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
@@ -286,7 +288,7 @@ export default function TeacherQuizzes() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Avg Score</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.avgScore')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">
@@ -302,13 +304,13 @@ export default function TeacherQuizzes() {
       {/* Quizzes List */}
       <Card>
         <CardHeader>
-          <CardTitle>My Quizzes</CardTitle>
+          <CardTitle>{t('teacher.myQuizzes')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {teacherQuizzes.length === 0 ? (
               <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                No quizzes created yet. Create your first quiz!
+                {t('teacher.noQuizzesCreatedYet')}
               </p>
             ) : (
               teacherQuizzes.map((quiz) => {
@@ -323,7 +325,7 @@ export default function TeacherQuizzes() {
                         <div className="flex items-center space-x-2 mb-2">
                           <h3 className="font-semibold text-gray-900 dark:text-white">{quiz.title}</h3>
                           <Badge variant={quiz.isActive ? "default" : "secondary"}>
-                            {quiz.isActive ? 'Active' : 'Inactive'}
+                            {quiz.isActive ? t('teacher.active') : t('teacher.inactive')}
                           </Badge>
                         </div>
                         <p className="text-gray-600 dark:text-gray-400 mb-2">{quiz.description}</p>
@@ -331,18 +333,18 @@ export default function TeacherQuizzes() {
                         <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                           <div className="flex items-center space-x-1">
                             <Target className="w-4 h-4" />
-                            <span>{quiz.questions.length} questions</span>
+                            <span>{quiz.questions.length} {t('teacher.questions')}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Clock className="w-4 h-4" />
-                            <span>{quiz.timeLimit} min</span>
+                            <span>{quiz.timeLimit} {t('teacher.min')}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Users className="w-4 h-4" />
-                            <span>{stats.submissions} submissions</span>
+                            <span>{stats.submissions} {t('teacher.submissions')}</span>
                           </div>
                           {quiz.dueDate && (
-                            <span>Due: {format(quiz.dueDate, 'MMM dd, yyyy')}</span>
+                            <span>{t('teacher.due')}: {format(quiz.dueDate, 'MMM dd, yyyy')}</span>
                           )}
                         </div>
                       </div>
@@ -354,7 +356,7 @@ export default function TeacherQuizzes() {
                           onClick={() => setShowResults(showResults === quiz.id ? null : quiz.id)}
                         >
                           <Eye className="w-4 h-4 mr-1" />
-                          Results
+                          {t('teacher.results')}
                         </Button>
                         <Button
                           variant="outline"
@@ -372,10 +374,10 @@ export default function TeacherQuizzes() {
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Student</TableHead>
-                              <TableHead>Score</TableHead>
-                              <TableHead>Time Taken</TableHead>
-                              <TableHead>Submitted</TableHead>
+                              <TableHead>{t('teacher.student')}</TableHead>
+                              <TableHead>{t('teacher.score')}</TableHead>
+                              <TableHead>{t('teacher.timeTaken')}</TableHead>
+                              <TableHead>{t('teacher.submitted')}</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>

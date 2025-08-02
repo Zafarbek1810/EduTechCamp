@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { useLessonsStore, type Lesson } from '@/store/lessonsStore'
 import { useGroupsStore } from '@/store/groupsStore'
@@ -10,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { BookOpen, Plus, Edit, Trash2, Calendar, FileText, X, Users, FileEdit } from 'lucide-react'
 
 export default function TeacherLessons() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const { getLessonsByTeacher, addLesson, updateLesson, deleteLesson } = useLessonsStore()
   const { getGroupsByTeacher } = useGroupsStore()
@@ -53,7 +55,7 @@ export default function TeacherLessons() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this lesson?')) {
+    if (confirm(t('teacher.confirmDeleteLesson'))) {
       deleteLesson(id)
     }
   }
@@ -91,12 +93,12 @@ export default function TeacherLessons() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Lessons</h1>
-          <p className="text-muted-foreground">Create and manage lessons for your groups</p>
+          <h1 className="text-3xl font-bold text-foreground">{t('teacher.lessons')}</h1>
+          <p className="text-muted-foreground">{t('teacher.createAndManageLessons')}</p>
         </div>
         <Button onClick={openAddModal} className="flex-0 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium">
           <Plus className="w-4 h-4 mr-2" />
-          Create Lesson
+          {t('teacher.createLesson')}
         </Button>
       </div>
 
@@ -104,33 +106,33 @@ export default function TeacherLessons() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Lessons</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.totalLessons')}</CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{teacherLessons.length}</div>
             <p className="text-xs text-muted-foreground">
-              Created lessons
+              {t('teacher.createdLessons')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Groups</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.activeGroups')}</CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{teacherGroups.length}</div>
             <p className="text-xs text-muted-foreground">
-              With lessons
+              {t('teacher.withLessons')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.thisMonth')}</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -143,7 +145,7 @@ export default function TeacherLessons() {
               }).length}
             </div>
             <p className="text-xs text-muted-foreground">
-              Lessons this month
+              {t('teacher.lessonsThisMonth')}
             </p>
           </CardContent>
         </Card>
@@ -159,17 +161,17 @@ export default function TeacherLessons() {
               <Badge variant="secondary">{group.subject}</Badge>
             </CardTitle>
             <CardDescription>
-              Lessons for {group.name} - {group.lessonDays.join(', ')} at {group.lessonTime}
+              {t('teacher.lessonsFor')} {group.name} - {group.lessonDays.join(', ')} {t('teacher.at')} {group.lessonTime}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Topic</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Homework</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t('teacher.topic')}</TableHead>
+                  <TableHead>{t('teacher.date')}</TableHead>
+                  <TableHead>{t('teacher.homework')}</TableHead>
+                  <TableHead>{t('teacher.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -213,7 +215,7 @@ export default function TeacherLessons() {
                 {getLessonsByGroup(group.id).length === 0 && (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-gray-500 py-8">
-                      No lessons created for this group yet.
+                      {t('teacher.noLessonsCreatedForGroupYet')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -243,10 +245,10 @@ export default function TeacherLessons() {
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold text-foreground">
-                        {editingLesson ? 'Edit Lesson' : 'Create New Lesson'}
+                        {editingLesson ? t('teacher.editLesson') : t('teacher.createNewLesson')}
                       </CardTitle>
                       <CardDescription className="text-muted-foreground">
-                        {editingLesson ? 'Update lesson information' : 'Create a new lesson for your group'}
+                        {editingLesson ? t('teacher.updateLessonInfo') : t('teacher.createNewLessonForGroup')}
                       </CardDescription>
                     </div>
                   </div>
@@ -265,12 +267,12 @@ export default function TeacherLessons() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Lesson Information */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Lesson Information</h3>
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('teacher.lessonInformation')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                           <Users className="w-4 h-4" />
-                          Group
+                          {t('teacher.group')}
                         </label>
                         <select
                           value={formData.groupId}
@@ -278,7 +280,7 @@ export default function TeacherLessons() {
                           className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                           required
                         >
-                          <option value="">Select a group</option>
+                          <option value="">{t('teacher.selectAGroup')}</option>
                           {teacherGroups.map((group) => (
                             <option key={group.id} value={group.id}>
                               {group.name} - {group.subject}
@@ -289,7 +291,7 @@ export default function TeacherLessons() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
-                          Date
+                          {t('teacher.date')}
                         </label>
                         <Input
                           type="date"
@@ -303,13 +305,13 @@ export default function TeacherLessons() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                         <FileEdit className="w-4 h-4" />
-                        Topic
+                        {t('teacher.topic')}
                       </label>
                       <Input
                         type="text"
                         value={formData.topic}
                         onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-                        placeholder="Enter lesson topic"
+                        placeholder={t('teacher.enterLessonTopic')}
                         className="h-10"
                         required
                       />
@@ -318,17 +320,17 @@ export default function TeacherLessons() {
 
                   {/* Content */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Content</h3>
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">{t('teacher.content')}</h3>
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                           <FileText className="w-4 h-4" />
-                          Homework Assignment
+                          {t('teacher.homeworkAssignment')}
                         </label>
                         <textarea
                           value={formData.homework}
                           onChange={(e) => setFormData({ ...formData, homework: e.target.value })}
-                          placeholder="Enter homework assignment"
+                          placeholder={t('teacher.enterHomeworkAssignment')}
                           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                           rows={3}
                           required
@@ -337,12 +339,12 @@ export default function TeacherLessons() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-foreground dark:text-white flex items-center gap-2">
                           <BookOpen className="w-4 h-4" />
-                          Description (Optional)
+                          {t('teacher.descriptionOptional')}
                         </label>
                         <textarea
                           value={formData.description}
                           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                          placeholder="Enter lesson description"
+                          placeholder={t('teacher.enterLessonDescription')}
                           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                           rows={2}
                         />
@@ -356,7 +358,7 @@ export default function TeacherLessons() {
                       type="submit" 
                       className="flex-1 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium"
                     >
-                      {editingLesson ? 'Update Lesson' : 'Create Lesson'}
+                      {editingLesson ? t('teacher.updateLesson') : t('teacher.createLesson')}
                     </Button>
                     <Button 
                       type="button" 
@@ -364,7 +366,7 @@ export default function TeacherLessons() {
                       onClick={handleCloseModal}
                       className="h-11 px-6"
                     >
-                      Cancel
+                      {t('common.cancel')}
                     </Button>
                   </div>
                 </form>

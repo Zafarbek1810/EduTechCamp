@@ -1,9 +1,11 @@
 import { ReactNode, useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { useChatStore } from '@/store/chatStore'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import LanguageSelector from '@/components/ui/LanguageSelector'
 import { 
   LayoutDashboard, 
   Users, 
@@ -31,6 +33,7 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const { t } = useTranslation()
   const { user, logout } = useAuthStore()
   const { getUnreadCount, messages, groups } = useChatStore()
   const navigate = useNavigate()
@@ -64,25 +67,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     switch (user.role) {
       case 'admin':
         return [
-          { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-          { name: 'Teachers', href: '/admin/teachers', icon: Users },
-          { name: 'Students', href: '/admin/students', icon: GraduationCap },
-          { name: 'Payments', href: '/admin/payments', icon: FileText },
-          { name: 'Reports', href: '/admin/reports', icon: BarChart3 },
-          { name: 'Products', href: '/admin/products', icon: ShoppingCart },
+          { name: t('navigation.dashboard'), href: '/admin/dashboard', icon: LayoutDashboard },
+          { name: t('navigation.teachers'), href: '/admin/teachers', icon: Users },
+          { name: t('navigation.students'), href: '/admin/students', icon: GraduationCap },
+          { name: t('navigation.payments'), href: '/admin/payments', icon: FileText },
+          { name: t('navigation.reports'), href: '/admin/reports', icon: BarChart3 },
+          { name: t('navigation.products'), href: '/admin/products', icon: ShoppingCart },
         ]
       case 'teacher':
         return [
-          { name: 'Dashboard', href: '/teacher/dashboard', icon: LayoutDashboard },
-          { name: 'My Groups', href: '/teacher/groups', icon: Users },
-          { name: 'Lessons', href: '/teacher/lessons', icon: BookOpen },
-          { name: 'Attendance', href: '/teacher/attendance', icon: CheckCircle },
-          { name: 'AI Test Generator', href: '/teacher/ai-test-generator', icon: Bot },
-          { name: 'Statistics', href: '/teacher/statistics', icon: BarChart3 },
-          { name: 'Calendar', href: '/teacher/calendar', icon: Calendar },
-          { name: 'Quizzes', href: '/teacher/quizzes', icon: ClipboardList },
+          { name: t('navigation.dashboard'), href: '/teacher/dashboard', icon: LayoutDashboard },
+          { name: t('common.myGroups'), href: '/teacher/groups', icon: Users },
+          { name: t('navigation.lessons'), href: '/teacher/lessons', icon: BookOpen },
+          { name: t('navigation.attendance'), href: '/teacher/attendance', icon: CheckCircle },
+          { name: t('common.aiTestGenerator'), href: '/teacher/ai-test-generator', icon: Bot },
+          { name: t('navigation.statistics'), href: '/teacher/statistics', icon: BarChart3 },
+          { name: t('navigation.calendar'), href: '/teacher/calendar', icon: Calendar },
+          { name: t('navigation.quizzes'), href: '/teacher/quizzes', icon: ClipboardList },
           { 
-            name: 'Messages', 
+            name: t('navigation.messages'), 
             href: '/teacher/messages', 
             icon: MessageSquare,
             badge: unreadCount
@@ -90,25 +93,25 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         ]
       case 'student':
         return [
-          { name: 'Dashboard', href: '/student/dashboard', icon: LayoutDashboard },
-          { name: 'Homework', href: '/student/homework', icon: BookOpen },
-          { name: 'Calendar', href: '/student/calendar', icon: Calendar },
-          { name: 'Quizzes', href: '/student/quizzes', icon: ClipboardList },
-          { name: 'Games', href: '/student/games', icon: Gamepad2 },
-          { name: 'Tests', href: '/student/tests', icon: FileText },
+          { name: t('navigation.dashboard'), href: '/student/dashboard', icon: LayoutDashboard },
+          { name: t('navigation.homework'), href: '/student/homework', icon: BookOpen },
+          { name: t('navigation.calendar'), href: '/student/calendar', icon: Calendar },
+          { name: t('navigation.quizzes'), href: '/student/quizzes', icon: ClipboardList },
+          { name: t('navigation.games'), href: '/student/games', icon: Gamepad2 },
+          { name: t('navigation.tests'), href: '/student/tests', icon: FileText },
           { 
-            name: 'Messages', 
+            name: t('navigation.messages'), 
             href: '/student/messages', 
             icon: MessageSquare,
             badge: unreadCount
           },
-          { name: 'Shop', href: '/student/shop', icon: ShoppingCart },
+          { name: t('navigation.shop'), href: '/student/shop', icon: ShoppingCart },
         ]
       case 'parent':
         return [
-          { name: 'Dashboard', href: '/parent/dashboard', icon: LayoutDashboard },
-          { name: 'My Child', href: '/parent/child', icon: GraduationCap },
-          { name: 'Payments', href: '/parent/payments', icon: FileText },
+          { name: t('navigation.dashboard'), href: '/parent/dashboard', icon: LayoutDashboard },
+          { name: t('common.myChild'), href: '/parent/child', icon: GraduationCap },
+          { name: t('navigation.payments'), href: '/parent/payments', icon: FileText },
         ]
       default:
         return []
@@ -226,7 +229,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               onClick={handleLogout}
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              {t('common.logout')}
             </Button>
           </div>
         </div>
@@ -252,14 +255,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
             
             <div className="flex items-center space-x-2">
-              <Button
+              <LanguageSelector />
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleDarkMode}
                 className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
               >
                 {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </Button>
+              </Button> */}
             </div>
           </div>
         </header>

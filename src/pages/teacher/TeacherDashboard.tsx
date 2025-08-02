@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
 import { Users, BookOpen, CheckCircle, Award } from 'lucide-react'
@@ -28,26 +29,28 @@ const studentScores = [
 ]
 
 export default function TeacherDashboard() {
+  const { t } = useTranslation()
+  
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.totalStudents')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">45</div>
             <p className="text-xs text-muted-foreground">
-              Across 4 groups
+              {t('dashboard.acrossGroups', { count: 4 })}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Groups</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.activeGroups')}</CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -60,26 +63,26 @@ export default function TeacherDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Attendance</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.avgAttendance')}</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">91%</div>
             <p className="text-xs text-muted-foreground">
-              +3% from last month
+              {t('dashboard.fromLastMonth', { percent: '+3%' })}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Score</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.avgScore')}</CardTitle>
             <Award className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">81%</div>
             <p className="text-xs text-muted-foreground">
-              +2% from last month
+              {t('dashboard.fromLastMonth', { percent: '+2%' })}
             </p>
           </CardContent>
         </Card>
@@ -90,9 +93,9 @@ export default function TeacherDashboard() {
         {/* Group Performance */}
         <Card>
           <CardHeader>
-            <CardTitle>Group Performance</CardTitle>
+            <CardTitle>{t('dashboard.groupPerformance')}</CardTitle>
             <CardDescription>
-              Performance metrics by group
+              {t('dashboard.performanceMetricsByGroup')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -113,9 +116,9 @@ export default function TeacherDashboard() {
         {/* Monthly Attendance */}
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Attendance Trend</CardTitle>
+            <CardTitle>{t('teacher.monthlyAttendanceTrend')}</CardTitle>
             <CardDescription>
-              Attendance trend over the last 6 months
+              {t('teacher.attendanceTrendLast6Months')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -135,9 +138,9 @@ export default function TeacherDashboard() {
       {/* Student Performance */}
       <Card>
         <CardHeader>
-          <CardTitle>Student Performance by Subject</CardTitle>
+          <CardTitle>{t('teacher.studentPerformanceBySubject')}</CardTitle>
           <CardDescription>
-            Individual student scores across subjects
+            {t('teacher.individualStudentScores')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -158,9 +161,9 @@ export default function TeacherDashboard() {
       {/* Recent Activities */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Activities</CardTitle>
+          <CardTitle>{t('teacher.recentActivities')}</CardTitle>
           <CardDescription>
-            Latest activities in your groups
+            {t('teacher.latestActivitiesInGroups')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -168,28 +171,28 @@ export default function TeacherDashboard() {
             <div className="flex items-center space-x-4">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Lesson completed</p>
-                <p className="text-xs text-muted-foreground">Advanced Calculus - Math A group</p>
+                <p className="text-sm font-medium">{t('teacher.lessonCompleted')}</p>
+                <p className="text-xs text-muted-foreground">{t('teacher.advancedCalculusMathA')}</p>
               </div>
-              <span className="text-xs text-muted-foreground">1 hour ago</span>
+              <span className="text-xs text-muted-foreground">{t('teacher.oneHourAgo')}</span>
             </div>
             
             <div className="flex items-center space-x-4">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Homework submitted</p>
-                <p className="text-xs text-muted-foreground">15 students submitted Physics homework</p>
+                <p className="text-sm font-medium">{t('teacher.homeworkSubmitted')}</p>
+                <p className="text-xs text-muted-foreground">{t('teacher.fifteenStudentsPhysicsHomework')}</p>
               </div>
-              <span className="text-xs text-muted-foreground">3 hours ago</span>
+              <span className="text-xs text-muted-foreground">{t('teacher.threeHoursAgo')}</span>
             </div>
             
             <div className="flex items-center space-x-4">
               <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
               <div className="flex-1">
-                <p className="text-sm font-medium">Attendance taken</p>
-                <p className="text-xs text-muted-foreground">Chemistry A - 14/15 students present</p>
+                <p className="text-sm font-medium">{t('teacher.attendanceTaken')}</p>
+                <p className="text-xs text-muted-foreground">{t('teacher.chemistryAFourteenFifteenStudents')}</p>
               </div>
-              <span className="text-xs text-muted-foreground">5 hours ago</span>
+              <span className="text-xs text-muted-foreground">{t('teacher.fiveHoursAgo')}</span>
             </div>
           </div>
         </CardContent>
@@ -198,29 +201,29 @@ export default function TeacherDashboard() {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
+          <CardTitle>{t('teacher.quickActions')}</CardTitle>
           <CardDescription>
-            Common actions for your groups
+            {t('teacher.commonActionsForGroups')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
               <BookOpen className="w-6 h-6 mb-2 text-blue-600" />
-              <h3 className="font-medium">Create Lesson</h3>
-              <p className="text-sm text-muted-foreground">Plan new lesson</p>
+              <h3 className="font-medium">{t('teacher.createLesson')}</h3>
+              <p className="text-sm text-muted-foreground">{t('teacher.planNewLesson')}</p>
             </button>
             
             <button className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
               <CheckCircle className="w-6 h-6 mb-2 text-green-600" />
-              <h3 className="font-medium">Take Attendance</h3>
-              <p className="text-sm text-muted-foreground">Mark student attendance</p>
+              <h3 className="font-medium">{t('teacher.takeAttendance')}</h3>
+              <p className="text-sm text-muted-foreground">{t('teacher.markStudentAttendance')}</p>
             </button>
             
             <button className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
               <Award className="w-6 h-6 mb-2 text-purple-600" />
-              <h3 className="font-medium">Assign Points</h3>
-              <p className="text-sm text-muted-foreground">Award student points</p>
+              <h3 className="font-medium">{t('teacher.assignPoints')}</h3>
+              <p className="text-sm text-muted-foreground">{t('teacher.awardStudentPoints')}</p>
             </button>
           </div>
         </CardContent>

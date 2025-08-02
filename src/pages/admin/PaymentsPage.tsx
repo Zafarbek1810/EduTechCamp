@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { usePaymentsStore } from '@/store/paymentsStore'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -6,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Search, DollarSign, Calendar } from 'lucide-react'
 
 export default function PaymentsPage() {
+  const { t } = useTranslation()
   const { payments, getPaymentsByMonth, getTotalPaymentsByMonth } = usePaymentsStore()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedMonth, setSelectedMonth] = useState('2024-02')
@@ -42,28 +44,28 @@ export default function PaymentsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Payments Management</h1>
-        <p className="text-muted-foreground">Track and manage student payments</p>
+        <h1 className="text-3xl font-bold">{t('admin.paymentsManagement')}</h1>
+        <p className="text-muted-foreground">{t('admin.paymentsManagementDesc')}</p>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Payments</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('admin.totalPayments')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalAmount.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              {filteredPayments.length} payments
+              {filteredPayments.length} {t('admin.payments')}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Current Month</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('admin.currentMonth')}</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -78,7 +80,7 @@ export default function PaymentsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Payment</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('admin.averagePayment')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -86,7 +88,7 @@ export default function PaymentsPage() {
               ${filteredPayments.length > 0 ? (totalAmount / filteredPayments.length).toFixed(0) : 0}
             </div>
             <p className="text-xs text-muted-foreground">
-              per student
+              {t('admin.perStudent')}
             </p>
           </CardContent>
         </Card>
@@ -98,7 +100,7 @@ export default function PaymentsPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Search by student name..."
+                placeholder={t('admin.searchByStudentName')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -109,7 +111,7 @@ export default function PaymentsPage() {
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="all">All Months</option>
+              <option value="all">{t('admin.allMonths')}</option>
               {months.map((month) => (
                 <option key={month} value={month}>
                   {formatMonth(month)}
@@ -122,12 +124,12 @@ export default function PaymentsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Student Name</TableHead>
-                <TableHead>Group</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Month</TableHead>
-                <TableHead>Payment Date</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t('admin.studentName')}</TableHead>
+                <TableHead>{t('admin.group')}</TableHead>
+                <TableHead>{t('admin.amount')}</TableHead>
+                <TableHead>{t('admin.month')}</TableHead>
+                <TableHead>{t('admin.paymentDate')}</TableHead>
+                <TableHead>{t('admin.status')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -155,8 +157,8 @@ export default function PaymentsPage() {
       {/* Monthly Breakdown */}
       <Card>
         <CardHeader>
-          <CardTitle>Monthly Breakdown</CardTitle>
-          <CardDescription>Payment totals by month</CardDescription>
+          <CardTitle>{t('admin.monthlyBreakdown')}</CardTitle>
+          <CardDescription>{t('admin.paymentTotalsByMonth')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -168,13 +170,13 @@ export default function PaymentsPage() {
                   <div>
                     <h3 className="font-medium">{formatMonth(month)}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {monthPayments.length} payments
+                      {monthPayments.length} {t('admin.payments')}
                     </p>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold">${total.toLocaleString()}</div>
                     <p className="text-sm text-muted-foreground">
-                      Average: ${monthPayments.length > 0 ? (total / monthPayments.length).toFixed(0) : 0}
+                      {t('admin.average')}: ${monthPayments.length > 0 ? (total / monthPayments.length).toFixed(0) : 0}
                     </p>
                   </div>
                 </div>

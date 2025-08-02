@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { enUS } from 'date-fns/locale/en-US'
@@ -28,6 +29,7 @@ const localizer = dateFnsLocalizer({
 })
 
 export default function TeacherCalendar() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const { addEvent, updateEvent, deleteEvent, getEventsByUser } = useCalendarStore()
   const { getGroupsByTeacher } = useGroupsStore()
@@ -87,7 +89,7 @@ export default function TeacherCalendar() {
 
   const handleSubmit = () => {
     if (!formData.groupId) {
-      alert('Please select a group for this event')
+      alert(t('teacher.pleaseSelectGroupForEvent'))
       return
     }
 
@@ -137,8 +139,8 @@ export default function TeacherCalendar() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground dark:text-white">Calendar</h1>
-          <p className="text-muted-foreground dark:text-gray-400">Manage your lessons, homework, and schedules</p>
+          <h1 className="text-2xl font-bold text-foreground dark:text-white">{t('teacher.calendar')}</h1>
+          <p className="text-muted-foreground dark:text-gray-400">{t('teacher.manageLessonsHomeworkAndSchedules')}</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -147,28 +149,28 @@ export default function TeacherCalendar() {
               resetForm()
             }}>
               <Plus className="w-4 h-4 mr-2" />
-              Add Event
+              {t('teacher.addEvent')}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800">
             <DialogHeader>
               <DialogTitle>
-                {isEditMode ? 'Edit Event' : 'Add New Event'}
+                {isEditMode ? t('teacher.editEvent') : t('teacher.addNewEvent')}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">{t('teacher.title')}</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="Event title"
+                  placeholder={t('teacher.eventTitle')}
                 />
               </div>
               
               <div>
-                <Label htmlFor="type">Type</Label>
+                <Label htmlFor="type">{t('teacher.type')}</Label>
                 <Select
                   value={formData.type}
                   onValueChange={(value: any) => setFormData(prev => ({ ...prev, type: value }))}
@@ -177,22 +179,22 @@ export default function TeacherCalendar() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="lesson">Lesson</SelectItem>
-                    <SelectItem value="homework">Homework</SelectItem>
-                    <SelectItem value="quiz">Quiz</SelectItem>
-                    <SelectItem value="exam">Exam</SelectItem>
+                    <SelectItem value="lesson">{t('teacher.lesson')}</SelectItem>
+                    <SelectItem value="homework">{t('teacher.homework')}</SelectItem>
+                    <SelectItem value="quiz">{t('teacher.quiz')}</SelectItem>
+                    <SelectItem value="exam">{t('teacher.exam')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <Label htmlFor="groupId">Group</Label>
+                <Label htmlFor="groupId">{t('teacher.group')}</Label>
                 <Select
                   value={formData.groupId}
                   onValueChange={(value: string) => setFormData(prev => ({ ...prev, groupId: value }))}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a group" />
+                    <SelectValue placeholder={t('teacher.selectAGroup')} />
                   </SelectTrigger>
                   <SelectContent>
                     {teacherGroups.map((group) => (
@@ -205,18 +207,18 @@ export default function TeacherCalendar() {
               </div>
               
               <div>
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t('teacher.description')}</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Event description"
+                  placeholder={t('teacher.eventDescription')}
                 />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="start">Start</Label>
+                  <Label htmlFor="start">{t('teacher.start')}</Label>
                   <Input
                     id="start"
                     type="datetime-local"
@@ -228,7 +230,7 @@ export default function TeacherCalendar() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="end">End</Label>
+                  <Label htmlFor="end">{t('teacher.end')}</Label>
                   <Input
                     id="end"
                     type="datetime-local"
@@ -243,7 +245,7 @@ export default function TeacherCalendar() {
               
               <div className="flex gap-2 pt-4">
                 <Button onClick={handleSubmit} className="flex-1 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium">
-                  {isEditMode ? 'Update' : 'Create'}
+                  {isEditMode ? t('teacher.update') : t('teacher.create')}
                 </Button>
                 {isEditMode && (
                   <Button variant="destructive" onClick={handleDelete}>
@@ -260,7 +262,7 @@ export default function TeacherCalendar() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Events</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.totalEvents')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{userEvents.length}</div>
@@ -268,7 +270,7 @@ export default function TeacherCalendar() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Lessons</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.lessons')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
@@ -278,7 +280,7 @@ export default function TeacherCalendar() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Homework</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.homework')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
@@ -288,7 +290,7 @@ export default function TeacherCalendar() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Quizzes</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('teacher.quizzes')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
@@ -302,7 +304,7 @@ export default function TeacherCalendar() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Calendar View</CardTitle>
+            <CardTitle>{t('teacher.calendarView')}</CardTitle>
             <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
               <Button
                 variant={currentView === 'month' ? 'default' : 'ghost'}
@@ -315,7 +317,7 @@ export default function TeacherCalendar() {
                 }`}
               >
                 <CalendarIcon className="w-4 h-4" />
-                <span className="font-medium">Month</span>
+                <span className="font-medium">{t('teacher.month')}</span>
               </Button>
               <Button
                 variant={currentView === 'week' ? 'default' : 'ghost'}
@@ -328,7 +330,7 @@ export default function TeacherCalendar() {
                 }`}
               >
                 <CalendarIcon className="w-4 h-4" />
-                <span className="font-medium">Week</span>
+                <span className="font-medium">{t('teacher.week')}</span>
               </Button>
               <Button
                 variant={currentView === 'day' ? 'default' : 'ghost'}
@@ -341,7 +343,7 @@ export default function TeacherCalendar() {
                 }`}
               >
                 <CalendarIcon className="w-4 h-4" />
-                <span className="font-medium">Day</span>
+                <span className="font-medium">{t('teacher.day')}</span>
               </Button>
             </div>
           </div>

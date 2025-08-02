@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -24,6 +25,7 @@ interface CardItem {
 const emojis = ['🎮', '🎲', '🎯', '🎪', '🎨', '🎭', '🎪', '🎯', '🎲', '🎮', '🎨', '🎭']
 
 export function MemoryGame() {
+  const { t } = useTranslation()
   console.log('MemoryGame component rendering...')
   
   try {
@@ -148,10 +150,10 @@ export function MemoryGame() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Brain className="h-6 w-6 text-blue-500" />
-              <h3 className="text-xl font-bold">Memory Game</h3>
+              <h3 className="text-xl font-bold">{t('games.memoryGame')}</h3>
             </div>
             <Badge variant={isGameActive ? "default" : "secondary"}>
-              {isGameActive ? "Playing" : "Ready"}
+              {isGameActive ? t('games.playing') : t('games.ready')}
             </Badge>
           </div>
           
@@ -162,11 +164,11 @@ export function MemoryGame() {
             </div>
             <div className="flex items-center gap-2">
               <Target className="h-4 w-4 text-green-500" />
-              <span>{moves} moves</span>
+              <span>{moves} {t('games.moves')}</span>
             </div>
             <div className="flex items-center gap-2">
               <Trophy className="h-4 w-4 text-yellow-500" />
-              <span>{score} pts</span>
+              <span>{score} {t('games.points')}</span>
             </div>
           </div>
         </div>
@@ -174,7 +176,7 @@ export function MemoryGame() {
         {/* Progress Bar */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span>Progress</span>
+            <span>{t('games.progress')}</span>
             <span>{Math.round(progress)}%</span>
           </div>
           <Progress value={progress} className="h-2" />
@@ -185,7 +187,7 @@ export function MemoryGame() {
           {!isGameActive ? (
             <Button onClick={initializeGame} className="flex items-center gap-2">
               <Play className="h-4 w-4" />
-              Start Game
+              {t('games.startGame')}
             </Button>
           ) : (
             <>
@@ -195,7 +197,7 @@ export function MemoryGame() {
                 className="flex items-center gap-2"
               >
                 {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-                {isPaused ? "Resume" : "Pause"}
+                {isPaused ? t('games.resume') : t('games.pause')}
               </Button>
               <Button 
                 onClick={initializeGame} 
@@ -203,7 +205,7 @@ export function MemoryGame() {
                 className="flex items-center gap-2"
               >
                 <RotateCcw className="h-4 w-4" />
-                Restart
+                {t('games.restart')}
               </Button>
             </>
           )}
@@ -237,26 +239,26 @@ export function MemoryGame() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-green-700">
                 <Star className="h-6 w-6" />
-                Congratulations!
+                {t('games.congratulations')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div>
-                    <p className="text-sm text-muted-foreground">Final Score</p>
+                    <p className="text-sm text-muted-foreground">{t('games.finalScore')}</p>
                     <p className="text-2xl font-bold text-green-600">{score}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">High Score</p>
+                    <p className="text-sm text-muted-foreground">{t('games.highScore')}</p>
                     <p className="text-2xl font-bold text-yellow-600">{highScore}</p>
                   </div>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-2">Time Remaining: {formatTime(timeLeft)}</p>
+                  <p className="text-sm text-muted-foreground mb-2">{t('games.timeRemaining')}: {formatTime(timeLeft)}</p>
                   <Button onClick={initializeGame} className="flex items-center gap-2 mx-auto">
                     <RotateCcw className="h-4 w-4" />
-                    Play Again
+                    {t('games.playAgain')}
                   </Button>
                 </div>
               </div>
@@ -270,27 +272,27 @@ export function MemoryGame() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-red-700">
                 <Clock className="h-6 w-6" />
-                Time's Up!
+                {t('games.timesUp')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center space-y-4">
                 <p className="text-muted-foreground">
-                  You ran out of time! Try again to improve your score.
+                  {t('games.youRanOutOfTime')}
                 </p>
                 <div className="flex items-center justify-center gap-4">
                   <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Score</p>
+                    <p className="text-sm text-muted-foreground">{t('games.score')}</p>
                     <p className="text-xl font-bold">{score}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Moves</p>
+                    <p className="text-sm text-muted-foreground">{t('games.moves')}</p>
                     <p className="text-xl font-bold">{moves}</p>
                   </div>
                 </div>
                 <Button onClick={initializeGame} className="flex items-center gap-2 mx-auto">
                   <RotateCcw className="h-4 w-4" />
-                  Try Again
+                  {t('games.tryAgain')}
                 </Button>
               </div>
             </CardContent>
@@ -301,14 +303,13 @@ export function MemoryGame() {
         {!isGameActive && cards.length === 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>How to Play</CardTitle>
+              <CardTitle>{t('games.howToPlay')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
-                <p>• Click cards to flip them and find matching pairs</p>
-                <p>• You have 5 minutes to complete the game</p>
-                <p>• Score points for each match and time remaining</p>
-                <p>• Try to complete the game with fewer moves for a higher score</p>
+                {t('games.memoryGameInstructions', { returnObjects: true }).map((instruction: string, index: number) => (
+                  <p key={index}>{instruction}</p>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -319,8 +320,8 @@ export function MemoryGame() {
     console.error('Error in MemoryGame component:', error)
     return (
       <div className="p-6">
-        <h3 className="text-lg font-bold text-red-600">Error Loading Memory Game</h3>
-        <p className="text-muted-foreground">There was an error loading the memory game.</p>
+        <h3 className="text-lg font-bold text-red-600">{t('games.errorLoadingMemoryGame')}</h3>
+        <p className="text-muted-foreground">{t('games.errorLoadingMemoryGameMessage')}</p>
         <pre className="mt-2 p-2 bg-gray-100 rounded text-xs">{error?.toString()}</pre>
       </div>
     )

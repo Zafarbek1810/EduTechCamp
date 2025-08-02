@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useStudentsStore, type Student } from '@/store/studentsStore'
 import { useTeachersStore } from '@/store/teachersStore'
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Edit, Trash2, Plus, Search, X, User, Phone, Mail, Users, GraduationCap, DollarSign, Award } from 'lucide-react'
 
 export default function StudentsPage() {
+  const { t } = useTranslation()
   const { students, addStudent, updateStudent, deleteStudent } = useStudentsStore()
   const { teachers } = useTeachersStore()
   const [searchTerm, setSearchTerm] = useState('')
@@ -53,7 +55,7 @@ export default function StudentsPage() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this student?')) {
+    if (confirm(t('admin.confirmDeleteStudent'))) {
       deleteStudent(id)
     }
   }
@@ -88,19 +90,19 @@ export default function StudentsPage() {
 
   const getTeacherName = (teacherId: string) => {
     const teacher = teachers.find(t => t.id === teacherId)
-    return teacher ? teacher.fullName : 'Unknown'
+    return teacher ? teacher.fullName : t('admin.unknown')
   }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Students Management</h1>
-          <p className="text-muted-foreground">Manage all students in the educational center</p>
+          <h1 className="text-3xl font-bold">{t('admin.studentsManagement')}</h1>
+          <p className="text-muted-foreground">{t('admin.studentsManagementDesc')}</p>
         </div>
         <Button onClick={openAddModal} className="flex-0 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium">
           <Plus className="h-4 w-4" />
-          Add Student
+          {t('admin.addStudent')}
         </Button>
       </div>
 
@@ -110,7 +112,7 @@ export default function StudentsPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Search students..."
+                placeholder={t('admin.searchStudents')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -122,14 +124,14 @@ export default function StudentsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Full Name</TableHead>
-                <TableHead>Phone Number</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Group</TableHead>
-                <TableHead>Teacher</TableHead>
-                <TableHead>Monthly Fee</TableHead>
-                <TableHead>Points</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t('admin.fullName')}</TableHead>
+                <TableHead>{t('admin.phoneNumber')}</TableHead>
+                <TableHead>{t('admin.email')}</TableHead>
+                <TableHead>{t('admin.group')}</TableHead>
+                <TableHead>{t('admin.teacher')}</TableHead>
+                <TableHead>{t('admin.monthlyFee')}</TableHead>
+                <TableHead>{t('admin.points')}</TableHead>
+                <TableHead className="text-right">{t('admin.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -188,10 +190,10 @@ export default function StudentsPage() {
                     </div>
                     <div>
                       <CardTitle className="text-xl font-bold text-gray-900">
-                        {editingStudent ? 'Edit Student' : 'Add New Student'}
+                        {editingStudent ? t('admin.editStudent') : t('admin.addNewStudent')}
                       </CardTitle>
                       <CardDescription className="text-gray-600">
-                        {editingStudent ? 'Update student information' : 'Add a new student to the system'}
+                        {editingStudent ? t('admin.updateStudentInfo') : t('admin.addNewStudentDesc')}
                       </CardDescription>
                     </div>
                   </div>
@@ -210,17 +212,17 @@ export default function StudentsPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Personal Information */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Personal Information</h3>
+                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">{t('admin.personalInformation')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <User className="w-4 h-4" />
-                          Full Name
+                          {t('admin.fullName')}
                         </label>
                         <Input
                           value={formData.fullName}
                           onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                          placeholder="Enter full name"
+                          placeholder={t('admin.enterFullName')}
                           className="h-10"
                           required
                         />
@@ -228,12 +230,12 @@ export default function StudentsPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <Phone className="w-4 h-4" />
-                          Phone Number
+                          {t('admin.phoneNumber')}
                         </label>
                         <Input
                           value={formData.phoneNumber}
                           onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                          placeholder="Enter phone number"
+                          placeholder={t('admin.enterPhoneNumber')}
                           className="h-10"
                           required
                         />
@@ -242,13 +244,13 @@ export default function StudentsPage() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                         <Mail className="w-4 h-4" />
-                        Email Address
+                        {t('admin.emailAddress')}
                       </label>
                       <Input
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="Enter email address"
+                        placeholder={t('admin.enterEmailAddress')}
                         className="h-10"
                         required
                       />
@@ -257,17 +259,17 @@ export default function StudentsPage() {
 
                   {/* Academic Information */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Academic Information</h3>
+                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">{t('admin.academicInformation')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <Users className="w-4 h-4" />
-                          Group
+                          {t('admin.group')}
                         </label>
                         <Input
                           value={formData.group}
                           onChange={(e) => setFormData({ ...formData, group: e.target.value })}
-                          placeholder="Enter group name"
+                          placeholder={t('admin.enterGroupName')}
                           className="h-10"
                           required
                         />
@@ -275,7 +277,7 @@ export default function StudentsPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                           <GraduationCap className="w-4 h-4" />
-                          Teacher
+                          {t('admin.teacher')}
                         </label>
                         <select
                           value={formData.teacherId}
@@ -283,7 +285,7 @@ export default function StudentsPage() {
                           className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                           required
                         >
-                          <option value="">Select a teacher</option>
+                          <option value="">{t('admin.selectTeacher')}</option>
                           {teachers.map((teacher) => (
                             <option key={teacher.id} value={teacher.id}>
                               {teacher.fullName} - {teacher.subject}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
 import { useAttendanceStore, type AttendanceRecord, type StudentAttendance } from '@/store/attendanceStore'
 import { useGroupsStore } from '@/store/groupsStore'
@@ -12,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { CheckCircle, XCircle, FileText, Award, Users, Save, AlertCircle } from 'lucide-react'
 
 export default function TeacherAttendance() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const { getGroupsByTeacher } = useGroupsStore()
   const { students, updateStudent } = useStudentsStore()
@@ -120,7 +122,7 @@ export default function TeacherAttendance() {
 
   const handleSave = async () => {
     if (!selectedGroup || !selectedDate || !selectedLesson) {
-      alert('Please select group, date, and lesson')
+      alert(t('teacher.pleaseSelectGroupDateAndLesson'))
       return
     }
 
@@ -152,7 +154,7 @@ export default function TeacherAttendance() {
         }
       })
       
-      alert('Attendance saved successfully! Points have been updated for all students.')
+      alert(t('teacher.attendanceSavedSuccessfully'))
       
       // Clear the form after successful save
       setSelectedGroup('')
@@ -160,48 +162,48 @@ export default function TeacherAttendance() {
       setSelectedLesson('')
       setAttendanceData([])
     } catch {
-      alert('Error saving attendance')
+      alert(t('teacher.errorSavingAttendance'))
     } finally {
       setIsLoading(false)
     }
   }
 
   const getLessonName = (lessonId: string) => {
-    return lessons.find(l => l.id === lessonId)?.topic || 'Unknown Lesson'
+    return lessons.find(l => l.id === lessonId)?.topic || t('teacher.unknownLesson')
   }
 
   const getGroupName = (groupId: string) => {
-    return teacherGroups.find(g => g.id === groupId)?.name || 'Unknown Group'
+    return teacherGroups.find(g => g.id === groupId)?.name || t('teacher.unknownGroup')
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Attendance & Homework</h1>
-        <p className="text-muted-foreground">Mark attendance, homework completion, and assign points</p>
+        <h1 className="text-3xl font-bold text-foreground">{t('teacher.attendanceAndHomework')}</h1>
+        <p className="text-muted-foreground">{t('teacher.markAttendanceHomeworkAndPoints')}</p>
       </div>
 
       {/* Selection Controls */}
       <Card>
         <CardHeader>
-          <CardTitle>Select Group and Date</CardTitle>
+          <CardTitle>{t('teacher.selectGroupAndDate')}</CardTitle>
           <CardDescription>
-            Choose a group and date to mark attendance
+            {t('teacher.chooseGroupAndDateToMarkAttendance')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-white mb-1">
-                Group
+                {t('teacher.group')}
               </label>
               <select
                 value={selectedGroup}
                 onChange={(e) => handleGroupChange(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-md"
               >
-                <option value="">Select a group</option>
+                <option value="">{t('teacher.selectAGroup')}</option>
                 {teacherGroups.map((group) => (
                   <option key={group.id} value={group.id}>
                     {group.name} - {group.subject}
@@ -212,7 +214,7 @@ export default function TeacherAttendance() {
 
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-white mb-1">
-                Date
+                {t('teacher.date')}
               </label>
               <Input
                 type="date"
@@ -223,7 +225,7 @@ export default function TeacherAttendance() {
 
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-white mb-1">
-                Lesson
+                {t('teacher.lesson')}
               </label>
               <select
                 value={selectedLesson}
@@ -231,7 +233,7 @@ export default function TeacherAttendance() {
                 className="w-full p-2 border border-gray-300 rounded-md"
                 disabled={!selectedGroup}
               >
-                <option value="">Select a lesson</option>
+                <option value="">{t('teacher.selectALesson')}</option>
                 {selectedGroup && getLessonsForGroup(selectedGroup).map((lesson) => (
                   <option key={lesson.id} value={lesson.id}>
                     {lesson.topic} - {new Date(lesson.date).toLocaleDateString()}
@@ -248,31 +250,31 @@ export default function TeacherAttendance() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Award className="w-5 h-5" />
-            <span>Points System</span>
+            <span>{t('teacher.pointsSystem')}</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <h4 className="font-medium">Attendance Points:</h4>
+              <h4 className="font-medium">{t('teacher.attendancePoints')}:</h4>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                <span>Present: +10 points</span>
+                <span>{t('teacher.present')}: +10 {t('teacher.points')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <XCircle className="w-4 h-4 text-red-500" />
-                <span>Absent: -5 points</span>
+                <span>{t('teacher.absent')}: -5 {t('teacher.points')}</span>
               </div>
             </div>
             <div className="space-y-2">
-              <h4 className="font-medium">Homework Points:</h4>
+              <h4 className="font-medium">{t('teacher.homeworkPoints')}:</h4>
               <div className="flex items-center space-x-2">
                 <FileText className="w-4 h-4 text-green-500" />
-                <span>Completed: +10 points</span>
+                <span>{t('teacher.completed')}: +10 {t('teacher.points')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 text-red-500" />
-                <span>Not Done: -5 points</span>
+                <span>{t('teacher.notDone')}: -5 {t('teacher.points')}</span>
               </div>
             </div>
           </div>
@@ -285,7 +287,7 @@ export default function TeacherAttendance() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Users className="w-5 h-5" />
-              <span>Attendance for {getGroupName(selectedGroup)} - {new Date(selectedDate).toLocaleDateString()}</span>
+              <span>{t('teacher.attendanceFor')} {getGroupName(selectedGroup)} - {new Date(selectedDate).toLocaleDateString()}</span>
               {selectedLesson && (
                 <Badge variant="secondary">
                   {getLessonName(selectedLesson)}
@@ -293,18 +295,18 @@ export default function TeacherAttendance() {
               )}
             </CardTitle>
             <CardDescription>
-              Mark attendance and homework completion. Points are automatically calculated.
+              {t('teacher.markAttendanceAndHomeworkDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead>Attendance</TableHead>
-                  <TableHead>Homework</TableHead>
-                  <TableHead>Points</TableHead>
-                  <TableHead>Notes</TableHead>
+                  <TableHead>{t('teacher.student')}</TableHead>
+                  <TableHead>{t('teacher.attendance')}</TableHead>
+                  <TableHead>{t('teacher.homework')}</TableHead>
+                  <TableHead>{t('teacher.points')}</TableHead>
+                  <TableHead>{t('teacher.notes')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -324,12 +326,12 @@ export default function TeacherAttendance() {
                           {record.isPresent ? (
                             <>
                               <CheckCircle className="w-4 h-4 mr-1" />
-                              Present (+10)
+                              {t('teacher.present')} (+10)
                             </>
                           ) : (
                             <>
                               <XCircle className="w-4 h-4 mr-1" />
-                              Absent (-5)
+                              {t('teacher.absent')} (-5)
                             </>
                           )}
                         </Button>
@@ -345,7 +347,7 @@ export default function TeacherAttendance() {
                           className={record.homeworkDone ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
                         >
                           <FileText className="w-4 h-4 mr-1" />
-                          {record.homeworkDone ? 'Done (+10)' : 'Not Done (-5)'}
+                          {record.homeworkDone ? `${t('teacher.done')} (+10)` : `${t('teacher.notDone')} (-5)`}
                         </Button>
                       </div>
                     </TableCell>
@@ -355,7 +357,7 @@ export default function TeacherAttendance() {
                           variant={record.points >= 0 ? "default" : "destructive"}
                           className="text-sm font-medium"
                         >
-                          {record.points > 0 ? '+' : ''}{record.points} points
+                          {record.points > 0 ? '+' : ''}{record.points} {t('teacher.points')}
                         </Badge>
                         <Award className="w-4 h-4 text-gray-500" />
                       </div>
@@ -365,7 +367,7 @@ export default function TeacherAttendance() {
                         type="text"
                         value={record.notes || ''}
                         onChange={(e) => handleAttendanceChange(record.studentId, 'notes', e.target.value)}
-                        placeholder="Optional notes"
+                        placeholder={t('teacher.optionalNotes')}
                         className="w-full"
                       />
                     </TableCell>
@@ -381,7 +383,7 @@ export default function TeacherAttendance() {
                 className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white"
               >
                 <Save className="w-4 h-4" />
-                <span>{isLoading ? 'Saving...' : 'Save Attendance & Update Points'}</span>
+                <span>{isLoading ? t('teacher.saving') : t('teacher.saveAttendanceAndUpdatePoints')}</span>
               </Button>
             </div>
           </CardContent>
@@ -392,17 +394,17 @@ export default function TeacherAttendance() {
       {(!selectedGroup || !selectedDate) && (
         <Card>
           <CardHeader>
-            <CardTitle>Instructions</CardTitle>
+            <CardTitle>{t('teacher.instructions')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>1. Select a group from the dropdown above</p>
-              <p>2. Choose a date for the attendance record</p>
-              <p>3. Select the lesson for this session</p>
-              <p>4. Mark attendance and homework completion for each student</p>
-              <p>5. Points are automatically calculated based on attendance and homework</p>
-              <p>6. Add optional notes for each student</p>
-              <p>7. Click "Save Attendance & Update Points" to save the data and update student points</p>
+              <p>1. {t('teacher.selectGroupFromDropdown')}</p>
+              <p>2. {t('teacher.chooseDateForAttendance')}</p>
+              <p>3. {t('teacher.selectLessonForSession')}</p>
+              <p>4. {t('teacher.markAttendanceAndHomeworkForStudents')}</p>
+              <p>5. {t('teacher.pointsAutomaticallyCalculated')}</p>
+              <p>6. {t('teacher.addOptionalNotesForStudents')}</p>
+              <p>7. {t('teacher.clickSaveToUpdatePoints')}</p>
             </div>
           </CardContent>
         </Card>
@@ -412,11 +414,11 @@ export default function TeacherAttendance() {
       {selectedGroup && selectedDate && attendanceData.length === 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>No Students Found</CardTitle>
+            <CardTitle>{t('teacher.noStudentsFound')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              No students are currently assigned to the selected group. Please assign students to the group first.
+              {t('teacher.noStudentsAssignedToSelectedGroup')}
             </p>
           </CardContent>
         </Card>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -6,6 +7,7 @@ import { useShopStore, type Product } from '@/store/shopStore'
 import { Plus, Edit, Trash2 } from 'lucide-react'
 
 export default function AdminProducts() {
+  const { t } = useTranslation()
   const { products, addProduct, removeProduct, updateProduct } = useShopStore()
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -56,7 +58,7 @@ export default function AdminProducts() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this product?')) {
+    if (confirm(t('admin.confirmDeleteProduct'))) {
       removeProduct(id)
     }
   }
@@ -66,12 +68,12 @@ export default function AdminProducts() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Shop Products</h2>
-          <p className="text-muted-foreground">Manage products available in the student shop</p>
+          <h2 className="text-2xl font-bold">{t('admin.shopProducts')}</h2>
+          <p className="text-muted-foreground">{t('admin.manageShopProducts')}</p>
         </div>
         <Button onClick={() => setShowForm(true)} className="flex-0 h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium">
           <Plus className="w-4 h-4" />
-          <span>Add Product</span>
+          <span>{t('admin.addProduct')}</span>
         </Button>
       </div>
 
@@ -79,70 +81,70 @@ export default function AdminProducts() {
       {showForm && (
         <Card>
           <CardHeader>
-            <CardTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</CardTitle>
+            <CardTitle>{editingProduct ? t('admin.editProduct') : t('admin.addNewProduct')}</CardTitle>
             <CardDescription>
-              {editingProduct ? 'Update product information' : 'Create a new product for the shop'}
+              {editingProduct ? t('admin.updateProductInfo') : t('admin.createNewProduct')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Product Name</label>
+                  <label className="text-sm font-medium">{t('admin.productName')}</label>
                   <Input
                     value={formData.name}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Enter product name"
+                    placeholder={t('admin.enterProductName')}
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium">Category</label>
+                  <label className="text-sm font-medium">{t('admin.category')}</label>
                   <Input
                     value={formData.category}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, category: e.target.value })}
-                    placeholder="e.g., Stationery, Discount"
+                    placeholder={t('admin.categoryExample')}
                     required
                   />
                 </div>
               </div>
               
               <div>
-                <label className="text-sm font-medium">Description</label>
+                <label className="text-sm font-medium">{t('admin.description')}</label>
                 <Input
                   value={formData.description}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Enter product description"
+                  placeholder={t('admin.enterProductDescription')}
                   required
                 />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Price (Points)</label>
+                  <label className="text-sm font-medium">{t('admin.pricePoints')}</label>
                   <Input
                     type="number"
                     value={formData.price}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, price: e.target.value })}
-                    placeholder="Enter price in points"
+                    placeholder={t('admin.enterPriceInPoints')}
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium">Image URL</label>
+                  <label className="text-sm font-medium">{t('admin.imageUrl')}</label>
                   <Input
                     value={formData.image}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, image: e.target.value })}
-                    placeholder="Enter image URL"
+                    placeholder={t('admin.enterImageUrl')}
                   />
                 </div>
               </div>
               
               <div className="flex space-x-2">
                 <Button type="submit" className="flex-0 h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium">
-                  {editingProduct ? 'Update Product' : 'Add Product'}
+                  {editingProduct ? t('admin.updateProduct') : t('admin.addProduct')}
                 </Button>
                 <Button 
                   type="button" 
@@ -153,7 +155,7 @@ export default function AdminProducts() {
                     setFormData({ name: '', description: '', price: '', category: '', image: '' })
                   }}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
               </div>
             </form>
@@ -176,13 +178,13 @@ export default function AdminProducts() {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Category:</span>
+                  <span className="text-sm font-medium">{t('admin.category')}:</span>
                   <span className="text-sm text-muted-foreground">{product.category}</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Price:</span>
-                  <span className="text-sm font-bold text-blue-600">{product.price} points</span>
+                  <span className="text-sm font-medium">{t('admin.price')}:</span>
+                  <span className="text-sm font-bold text-blue-600">{product.price} {t('admin.points')}</span>
                 </div>
                 
                 <div className="flex space-x-2">
@@ -193,7 +195,7 @@ export default function AdminProducts() {
                     className="flex-1"
                   >
                     <Edit className="w-4 h-4 mr-2" />
-                    Edit
+                    {t('common.edit')}
                   </Button>
                   <Button
                     size="sm"
@@ -213,17 +215,17 @@ export default function AdminProducts() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('admin.totalProducts')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{products.length}</div>
-            <p className="text-xs text-muted-foreground">Available in shop</p>
+            <p className="text-xs text-muted-foreground">{t('admin.availableInShop')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Average Price</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('admin.averagePrice')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -232,19 +234,19 @@ export default function AdminProducts() {
                 : 0
               }
             </div>
-            <p className="text-xs text-muted-foreground">Points per product</p>
+            <p className="text-xs text-muted-foreground">{t('admin.pointsPerProduct')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Categories</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('admin.categories')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {new Set(products.map((p: Product) => p.category)).size}
             </div>
-            <p className="text-xs text-muted-foreground">Different categories</p>
+            <p className="text-xs text-muted-foreground">{t('admin.differentCategories')}</p>
           </CardContent>
         </Card>
       </div>
